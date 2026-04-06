@@ -1,0 +1,212 @@
+{
+  "app": {
+    "title": "RustDesk 控制台"
+  },
+  "sidebar": {
+    "welcome": "歡迎",
+    "devices": "裝置",
+    "logs": "日誌",
+    "logs_connection": "連線",
+    "logs_file": "檔案",
+    "logs_alarm": "警報",
+    "logs_console": "操作",
+    "users": "使用者",
+    "groups": "群組",
+    "address_books": "通訊錄",
+    "strategies": "策略",
+    "custom_clients": "自訂客戶端",
+    "settings": "設定",
+    "settings_oauth": "OAuth",
+    "settings_tokens": "使用者 Token",
+    "settings_login_logs": "登入日誌",
+    "settings_share_records": "分享記錄",
+    "settings_commands": "伺服器指令"
+  },
+  "login": {
+    "title": "帳號登入",
+    "username": "使用者名稱",
+    "password": "密碼",
+    "remember_me": "記住我",
+    "forgot_password": "忘記密碼？",
+    "login": "登入",
+    "or": "或",
+    "login_with": "使用 {{provider}} 登入"
+  },
+  "common": {
+    "add": "新增",
+    "edit": "編輯",
+    "delete": "刪除",
+    "save": "儲存",
+    "cancel": "取消",
+    "confirm": "確認",
+    "search": "搜尋",
+    "reset": "重置",
+    "query": "查詢",
+    "expand": "展開",
+    "export": "匯出",
+    "import": "匯入",
+    "batch_delete": "批次刪除",
+    "actions": "操作",
+    "created_at": "建立時間",
+    "updated_at": "更新時間",
+    "status": "狀態",
+    "enabled": "啟用",
+    "disabled": "停用",
+    "yes": "是",
+    "no": "否",
+    "loading": "載入中...",
+    "no_data": "暫無資料",
+    "confirm_delete": "確定要刪除此項目嗎？",
+    "confirm_batch_delete": "確定要刪除所選項目嗎？",
+    "success": "成功",
+    "error": "錯誤",
+    "total": "共計",
+    "page": "頁",
+    "items_per_page": "每頁筆數",
+    "profile": "個人資料",
+    "logout": "登出",
+    "change_password": "修改密碼",
+    "language": "語言",
+    "theme": "主題"
+  },
+  "dashboard": {
+    "title": "歡迎",
+    "total_users": "使用者總數",
+    "total_devices": "裝置總數",
+    "total_connections": "連線總數"
+  },
+  "devices": {
+    "title": "裝置",
+    "id": "ID",
+    "device": "裝置",
+    "alias": "別名",
+    "hostname": "主機名稱",
+    "username": "使用者名稱",
+    "os": "作業系統",
+    "version": "版本",
+    "last_online": "最後上線",
+    "last_ip": "最後 IP",
+    "group": "群組",
+    "cpu": "CPU",
+    "memory": "記憶體",
+    "uuid": "UUID",
+    "note": "備註",
+    "password": "密碼",
+    "tags": "標籤",
+    "recycle_bin": "回收站"
+  },
+  "users": {
+    "title": "使用者",
+    "username": "使用者名稱",
+    "email": "電子郵件",
+    "nickname": "暱稱",
+    "group": "群組",
+    "admin": "管理員",
+    "remark": "備註",
+    "reset_password": "重設密碼",
+    "new_password": "新密碼"
+  },
+  "groups": {
+    "title": "群組",
+    "user_groups": "使用者群組",
+    "device_groups": "裝置群組",
+    "name": "名稱",
+    "type": "類型",
+    "common_group": "一般群組",
+    "shared_group": "共享群組"
+  },
+  "logs": {
+    "title": "日誌",
+    "connection": {
+      "title": "連線日誌",
+      "action": "動作",
+      "conn_id": "連線 ID",
+      "peer_id": "Peer ID",
+      "from_peer": "來源 Peer",
+      "from_name": "來源名稱",
+      "ip": "IP",
+      "session_id": "Session ID",
+      "type": "類型",
+      "close_time": "關閉時間"
+    },
+    "file": {
+      "title": "檔案傳輸日誌",
+      "path": "路徑",
+      "is_file": "是否為檔案",
+      "info": "資訊",
+      "num": "數量"
+    }
+  },
+  "address_books": {
+    "title": "通訊錄",
+    "collections": "通訊錄集合",
+    "entries": "條目",
+    "rules": "規則",
+    "tags": "標籤",
+    "name": "名稱",
+    "color": "顏色",
+    "owner": "擁有者",
+    "rule_read": "唯讀",
+    "rule_readwrite": "讀寫",
+    "rule_full": "完全控制",
+    "type_user": "使用者",
+    "type_group": "群組"
+  },
+  "strategies": {
+    "title": "策略",
+    "name": "名稱",
+    "guid": "GUID",
+    "config_options": "設定選項"
+  },
+  "custom_clients": {
+    "title": "自訂客戶端",
+    "pro_only": "此功能需要 RustDesk Server Pro。"
+  },
+  "settings": {
+    "oauth": {
+      "title": "OAuth",
+      "provider": "提供者",
+      "type": "類型",
+      "client_id": "Client ID",
+      "client_secret": "Client Secret",
+      "issuer": "Issuer",
+      "scopes": "Scopes",
+      "auto_register": "自動註冊",
+      "pkce_enable": "PKCE 啟用",
+      "pkce_method": "PKCE 方式"
+    },
+    "tokens": {
+      "title": "使用者 Token",
+      "token": "Token",
+      "device": "裝置",
+      "expired_at": "到期時間"
+    },
+    "login_logs": {
+      "title": "登入日誌",
+      "client": "客戶端",
+      "device_id": "裝置 ID",
+      "uuid": "UUID",
+      "ip": "IP",
+      "type": "類型",
+      "platform": "平台"
+    },
+    "share_records": {
+      "title": "分享記錄",
+      "peer_id": "Peer ID",
+      "share_token": "分享 Token",
+      "password_type": "密碼類型",
+      "expire": "到期時間"
+    },
+    "commands": {
+      "title": "伺服器指令",
+      "cmd": "指令",
+      "alias": "別名",
+      "option": "選項",
+      "explain": "說明",
+      "target": "目標",
+      "send": "傳送",
+      "id_server": "ID 伺服器",
+      "relay_server": "中繼伺服器"
+    }
+  }
+}

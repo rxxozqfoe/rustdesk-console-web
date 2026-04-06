@@ -1,0 +1,212 @@
+{
+  "app": {
+    "title": "RustDesk Console"
+  },
+  "sidebar": {
+    "welcome": "Welcome",
+    "devices": "Devices",
+    "logs": "Logs",
+    "logs_connection": "Connection",
+    "logs_file": "File",
+    "logs_alarm": "Alarm",
+    "logs_console": "Console",
+    "users": "Users",
+    "groups": "Groups",
+    "address_books": "Address Books",
+    "strategies": "Strategies",
+    "custom_clients": "Custom Clients",
+    "settings": "Settings",
+    "settings_oauth": "OAuth",
+    "settings_tokens": "User Tokens",
+    "settings_login_logs": "Login Logs",
+    "settings_share_records": "Share Records",
+    "settings_commands": "Server Commands"
+  },
+  "login": {
+    "title": "Account Login",
+    "username": "User Name",
+    "password": "Password",
+    "remember_me": "Remember me",
+    "forgot_password": "Forgot Password ?",
+    "login": "Login",
+    "or": "or",
+    "login_with": "Login With {{provider}}"
+  },
+  "common": {
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "search": "Search",
+    "reset": "Reset",
+    "query": "Query",
+    "expand": "Expand",
+    "export": "Export",
+    "import": "Import",
+    "batch_delete": "Batch Delete",
+    "actions": "Actions",
+    "created_at": "Created At",
+    "updated_at": "Updated At",
+    "status": "Status",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "yes": "Yes",
+    "no": "No",
+    "loading": "Loading...",
+    "no_data": "No data",
+    "confirm_delete": "Are you sure you want to delete this item?",
+    "confirm_batch_delete": "Are you sure you want to delete the selected items?",
+    "success": "Success",
+    "error": "Error",
+    "total": "Total",
+    "page": "Page",
+    "items_per_page": "Items per page",
+    "profile": "Profile",
+    "logout": "Logout",
+    "change_password": "Change Password",
+    "language": "Language",
+    "theme": "Theme"
+  },
+  "dashboard": {
+    "title": "Welcome",
+    "total_users": "Total Users",
+    "total_devices": "Total Devices",
+    "total_connections": "Total Connections"
+  },
+  "devices": {
+    "title": "Devices",
+    "id": "ID",
+    "device": "Device",
+    "alias": "Alias",
+    "hostname": "Hostname",
+    "username": "Username",
+    "os": "OS",
+    "version": "Version",
+    "last_online": "Last Online",
+    "last_ip": "Last IP",
+    "group": "Group",
+    "cpu": "CPU",
+    "memory": "Memory",
+    "uuid": "UUID",
+    "note": "Note",
+    "password": "Password",
+    "tags": "Tags",
+    "recycle_bin": "Recycle Bin"
+  },
+  "users": {
+    "title": "Users",
+    "username": "Username",
+    "email": "Email",
+    "nickname": "Nickname",
+    "group": "Group",
+    "admin": "Admin",
+    "remark": "Remark",
+    "reset_password": "Reset Password",
+    "new_password": "New Password"
+  },
+  "groups": {
+    "title": "Groups",
+    "user_groups": "User Groups",
+    "device_groups": "Device Groups",
+    "name": "Name",
+    "type": "Type",
+    "common_group": "Common Group",
+    "shared_group": "Shared Group"
+  },
+  "logs": {
+    "title": "Logs",
+    "connection": {
+      "title": "Connection Logs",
+      "action": "Action",
+      "conn_id": "Conn ID",
+      "peer_id": "Peer ID",
+      "from_peer": "From Peer",
+      "from_name": "From Name",
+      "ip": "IP",
+      "session_id": "Session ID",
+      "type": "Type",
+      "close_time": "Close Time"
+    },
+    "file": {
+      "title": "File Transfer Logs",
+      "path": "Path",
+      "is_file": "Is File",
+      "info": "Info",
+      "num": "Num"
+    }
+  },
+  "address_books": {
+    "title": "Address Books",
+    "collections": "Collections",
+    "entries": "Entries",
+    "rules": "Rules",
+    "tags": "Tags",
+    "name": "Name",
+    "color": "Color",
+    "owner": "Owner",
+    "rule_read": "Read",
+    "rule_readwrite": "Read/Write",
+    "rule_full": "Full Control",
+    "type_user": "User",
+    "type_group": "Group"
+  },
+  "strategies": {
+    "title": "Strategies",
+    "name": "Name",
+    "guid": "GUID",
+    "config_options": "Config Options"
+  },
+  "custom_clients": {
+    "title": "Custom Clients",
+    "pro_only": "This feature requires RustDesk Server Pro."
+  },
+  "settings": {
+    "oauth": {
+      "title": "OAuth",
+      "provider": "Provider",
+      "type": "Type",
+      "client_id": "Client ID",
+      "client_secret": "Client Secret",
+      "issuer": "Issuer",
+      "scopes": "Scopes",
+      "auto_register": "Auto Register",
+      "pkce_enable": "PKCE Enable",
+      "pkce_method": "PKCE Method"
+    },
+    "tokens": {
+      "title": "User Tokens",
+      "token": "Token",
+      "device": "Device",
+      "expired_at": "Expired At"
+    },
+    "login_logs": {
+      "title": "Login Logs",
+      "client": "Client",
+      "device_id": "Device ID",
+      "uuid": "UUID",
+      "ip": "IP",
+      "type": "Type",
+      "platform": "Platform"
+    },
+    "share_records": {
+      "title": "Share Records",
+      "peer_id": "Peer ID",
+      "share_token": "Share Token",
+      "password_type": "Password Type",
+      "expire": "Expire"
+    },
+    "commands": {
+      "title": "Server Commands",
+      "cmd": "Command",
+      "alias": "Alias",
+      "option": "Option",
+      "explain": "Explain",
+      "target": "Target",
+      "send": "Send",
+      "id_server": "ID Server",
+      "relay_server": "Relay Server"
+    }
+  }
+}
