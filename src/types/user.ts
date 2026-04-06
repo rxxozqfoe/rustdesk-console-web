@@ -33,9 +33,12 @@ export interface LoginPayload {
 }
 
 export interface LoginResponse {
-  access_token: string
-  user: User
-  type?: string
+  token: string
+  username: string
+  email: string
+  avatar: string
+  nickname: string
+  route_names: string[]
 }
 
 export interface LoginOptions {
