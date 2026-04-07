@@ -20,7 +20,12 @@
     "settings_tokens": "使用者 Token",
     "settings_login_logs": "登入日誌",
     "settings_share_records": "分享記錄",
-    "settings_commands": "伺服器指令"
+    "settings_commands": "伺服器指令",
+    "my_space": "我的空間",
+    "my_devices": "我的裝置",
+    "my_address_books": "我的通訊錄",
+    "my_share_records": "我的分享記錄",
+    "my_login_logs": "我的登入日誌"
   },
   "login": {
     "title": "帳號登入",
@@ -143,6 +148,13 @@
     "entries": "條目",
     "rules": "規則",
     "tags": "標籤",
+    "id": "ID",
+    "alias": "別名",
+    "hostname": "主機名稱",
+    "platform": "平台",
+    "note": "備註",
+    "user_id": "使用者 ID",
+    "collection": "集合",
     "name": "名稱",
     "color": "顏色",
     "owner": "擁有者",
@@ -150,7 +162,9 @@
     "rule_readwrite": "讀寫",
     "rule_full": "完全控制",
     "type_user": "使用者",
-    "type_group": "群組"
+    "type_group": "群組",
+    "target_id": "目標 ID",
+    "permission": "權限"
   },
   "strategies": {
     "title": "策略",
@@ -177,12 +191,16 @@
     },
     "tokens": {
       "title": "使用者 Token",
+      "user_id": "使用者 ID",
+      "device_id": "裝置 ID",
+      "device_uuid": "裝置 UUID",
       "token": "Token",
       "device": "裝置",
       "expired_at": "到期時間"
     },
     "login_logs": {
       "title": "登入日誌",
+      "user_id": "使用者 ID",
       "client": "客戶端",
       "device_id": "裝置 ID",
       "uuid": "UUID",
@@ -192,6 +210,7 @@
     },
     "share_records": {
       "title": "分享記錄",
+      "user_id": "使用者 ID",
       "peer_id": "Peer ID",
       "share_token": "分享 Token",
       "password_type": "密碼類型",
@@ -208,5 +227,29 @@
       "id_server": "ID 伺服器",
       "relay_server": "中繼伺服器"
     }
+  },
+  "my": {
+    "title": "我的空間",
+    "devices_title": "我的裝置",
+    "share_records_title": "我的分享記錄",
+    "login_logs_title": "我的登入日誌",
+    "address_books_title": "我的通訊錄",
+    "ab_entries": "條目",
+    "ab_tags": "標籤",
+    "ab_collections": "集合",
+    "ab_rules": "分享規則",
+    "ab_id": "ID",
+    "ab_alias": "別名",
+    "ab_hostname": "主機名稱",
+    "ab_platform": "平台",
+    "ab_note": "備註",
+    "ab_tags_label": "標籤",
+    "ab_tag_name": "名稱",
+    "ab_tag_color": "顏色",
+    "ab_collection_name": "名稱",
+    "ab_rule_collection": "集合",
+    "ab_rule_type": "類型",
+    "ab_rule_target": "目標 ID",
+    "ab_rule_level": "權限"
   }
 }

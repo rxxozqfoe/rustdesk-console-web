@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { useLocation, useNavigate } from 'react-router'
+import { useLocation, useNavigate, Link } from 'react-router'
 import { Sun, Moon, Globe, LogOut } from 'lucide-react'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Separator } from '@/components/ui/separator'
@@ -93,7 +93,7 @@ export function AppHeader() {
                   {isLast ? (
                     <BreadcrumbPage>{t(labelKey)}</BreadcrumbPage>
                   ) : (
-                    <BreadcrumbLink href={path}>{t(labelKey)}</BreadcrumbLink>
+                    <BreadcrumbLink render={<Link to={path} />}>{t(labelKey)}</BreadcrumbLink>
                   )}
                 </BreadcrumbItem>
               )
@@ -156,7 +156,7 @@ export function AppHeader() {
               </div>
             </div>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={handleLogout}>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut className="size-4" />
               {t('common.logout')}
             </DropdownMenuItem>

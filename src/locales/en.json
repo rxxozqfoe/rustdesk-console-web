@@ -20,7 +20,12 @@
     "settings_tokens": "User Tokens",
     "settings_login_logs": "Login Logs",
     "settings_share_records": "Share Records",
-    "settings_commands": "Server Commands"
+    "settings_commands": "Server Commands",
+    "my_space": "My Space",
+    "my_devices": "My Devices",
+    "my_address_books": "My Address Books",
+    "my_share_records": "My Share Records",
+    "my_login_logs": "My Login Logs"
   },
   "login": {
     "title": "Account Login",
@@ -143,6 +148,13 @@
     "entries": "Entries",
     "rules": "Rules",
     "tags": "Tags",
+    "id": "ID",
+    "alias": "Alias",
+    "hostname": "Hostname",
+    "platform": "Platform",
+    "note": "Note",
+    "user_id": "User ID",
+    "collection": "Collection",
     "name": "Name",
     "color": "Color",
     "owner": "Owner",
@@ -150,7 +162,9 @@
     "rule_readwrite": "Read/Write",
     "rule_full": "Full Control",
     "type_user": "User",
-    "type_group": "Group"
+    "type_group": "Group",
+    "target_id": "Target ID",
+    "permission": "Permission"
   },
   "strategies": {
     "title": "Strategies",
@@ -177,12 +191,16 @@
     },
     "tokens": {
       "title": "User Tokens",
+      "user_id": "User ID",
+      "device_id": "Device ID",
+      "device_uuid": "Device UUID",
       "token": "Token",
       "device": "Device",
       "expired_at": "Expired At"
     },
     "login_logs": {
       "title": "Login Logs",
+      "user_id": "User ID",
       "client": "Client",
       "device_id": "Device ID",
       "uuid": "UUID",
@@ -192,6 +210,7 @@
     },
     "share_records": {
       "title": "Share Records",
+      "user_id": "User ID",
       "peer_id": "Peer ID",
       "share_token": "Share Token",
       "password_type": "Password Type",
@@ -208,5 +227,29 @@
       "id_server": "ID Server",
       "relay_server": "Relay Server"
     }
+  },
+  "my": {
+    "title": "My Space",
+    "devices_title": "My Devices",
+    "share_records_title": "My Share Records",
+    "login_logs_title": "My Login Logs",
+    "address_books_title": "My Address Books",
+    "ab_entries": "Entries",
+    "ab_tags": "Tags",
+    "ab_collections": "Collections",
+    "ab_rules": "Sharing Rules",
+    "ab_id": "ID",
+    "ab_alias": "Alias",
+    "ab_hostname": "Hostname",
+    "ab_platform": "Platform",
+    "ab_note": "Note",
+    "ab_tags_label": "Tags",
+    "ab_tag_name": "Name",
+    "ab_tag_color": "Color",
+    "ab_collection_name": "Name",
+    "ab_rule_collection": "Collection",
+    "ab_rule_type": "Type",
+    "ab_rule_target": "Target ID",
+    "ab_rule_level": "Permission"
   }
 }

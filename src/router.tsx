@@ -20,6 +20,10 @@ const TokensPage = lazy(() => import('@/pages/settings/tokens'))
 const LoginLogsPage = lazy(() => import('@/pages/settings/login-logs'))
 const ShareRecordsPage = lazy(() => import('@/pages/settings/share-records'))
 const CommandsPage = lazy(() => import('@/pages/settings/commands'))
+const MyDevicesPage = lazy(() => import('@/pages/my/devices'))
+const MyAddressBooksPage = lazy(() => import('@/pages/my/address-books'))
+const MyShareRecordsPage = lazy(() => import('@/pages/my/share-records'))
+const MyLoginLogsPage = lazy(() => import('@/pages/my/login-logs'))
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const token = useAuthStore((s) => s.token)
@@ -75,6 +79,10 @@ export function AppRouter() {
           <Route path="settings/login-logs" element={<SuspenseWrapper><LoginLogsPage /></SuspenseWrapper>} />
           <Route path="settings/share-records" element={<SuspenseWrapper><ShareRecordsPage /></SuspenseWrapper>} />
           <Route path="settings/commands" element={<SuspenseWrapper><CommandsPage /></SuspenseWrapper>} />
+          <Route path="my/devices" element={<SuspenseWrapper><MyDevicesPage /></SuspenseWrapper>} />
+          <Route path="my/address-books" element={<SuspenseWrapper><MyAddressBooksPage /></SuspenseWrapper>} />
+          <Route path="my/share-records" element={<SuspenseWrapper><MyShareRecordsPage /></SuspenseWrapper>} />
+          <Route path="my/login-logs" element={<SuspenseWrapper><MyLoginLogsPage /></SuspenseWrapper>} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

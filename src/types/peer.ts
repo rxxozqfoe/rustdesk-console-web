@@ -11,7 +11,6 @@ export interface Peer {
   alias: string
   device_group_id: number
   note: string
-  platform: string
   user_id: number
   last_online_time: string
   last_online_ip: string

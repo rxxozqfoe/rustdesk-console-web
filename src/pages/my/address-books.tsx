@@ -42,29 +42,29 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import {
-  getAddressBooks,
-  createAddressBook,
-  updateAddressBook,
-  deleteAddressBook,
-  getTags,
-  createTag,
-  updateTag,
-  deleteTag,
-  getCollections,
-  createCollection,
-  updateCollection,
-  deleteCollection,
-  getCollectionRules,
-  createCollectionRule,
-  updateCollectionRule,
-  deleteCollectionRule,
-} from '@/services/address-book.service'
+  getMyAddressBooks,
+  createMyAddressBook,
+  updateMyAddressBook,
+  deleteMyAddressBook,
+  getMyTags,
+  createMyTag,
+  updateMyTag,
+  deleteMyTag,
+  getMyCollections,
+  createMyCollection,
+  updateMyCollection,
+  deleteMyCollection,
+  getMyCollectionRules,
+  createMyCollectionRule,
+  updateMyCollectionRule,
+  deleteMyCollectionRule,
+} from '@/services/my-address-book.service'
 import type {
-  AddressBook,
-  Tag,
-  AddressBookCollection,
-  AddressBookCollectionRule,
-} from '@/types/address-book'
+  MyAddressBook,
+  MyTag,
+  MyAddressBookCollection,
+  MyAddressBookCollectionRule,
+} from '@/types/my-address-book'
 
 // ─── Entries Tab ─────────────────────────────────────────────────────────────
 
@@ -90,13 +90,13 @@ function EntriesTab() {
   const [searchParams, setSearchParams] = useState({ id: '', hostname: '' })
 
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [editingEntry, setEditingEntry] = useState<AddressBook | null>(null)
+  const [editingEntry, setEditingEntry] = useState<MyAddressBook | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<number | null>(null)
 
   const { data, isLoading } = useQuery({
-    queryKey: ['address-books', page, pageSize, searchParams],
+    queryKey: ['my-address-books', page, pageSize, searchParams],
     queryFn: () =>
-      getAddressBooks({
+      getMyAddressBooks({
         page,
         page_size: pageSize,
         id: searchParams.id || undefined,
@@ -105,8 +105,8 @@ function EntriesTab() {
   })
 
   const { data: collectionsData } = useQuery({
-    queryKey: ['collections-all'],
-    queryFn: () => getCollections({ page: 1, page_size: 1000 }),
+    queryKey: ['my-collections-all'],
+    queryFn: () => getMyCollections({ page: 1, page_size: 1000 }),
   })
 
   const entries = data?.list ?? []
@@ -119,34 +119,46 @@ function EntriesTab() {
   })
 
   const createMutation = useMutation({
-    mutationFn: (data: EntryFormValues) => createAddressBook(data),
+    mutationFn: (data: EntryFormValues) => createMyAddressBook(data),
     onSuccess: () => {
       toast.success(t('common.success'))
-      queryClient.invalidateQueries({ queryKey: ['address-books'] })
+      queryClient.invalidateQueries({ queryKey: ['my-address-books'] })
       setDialogOpen(false)
     },
     onError: (err: Error) => toast.error(err.message),
   })
 
   const updateMutation = useMutation({
-    mutationFn: (data: EntryFormValues & { row_id: number }) => updateAddressBook(data),
+    mutationFn: (data: EntryFormValues & { row_id: number }) => updateMyAddressBook(data),
     onSuccess: () => {
       toast.success(t('common.success'))
-      queryClient.invalidateQueries({ queryKey: ['address-books'] })
+      queryClient.invalidateQueries({ queryKey: ['my-address-books'] })
       setDialogOpen(false)
     },
     onError: (err: Error) => toast.error(err.message),
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => deleteAddressBook(id),
+    mutationFn: (id: number) => deleteMyAddressBook(id),
     onSuccess: () => {
       toast.success(t('common.success'))
-      queryClient.invalidateQueries({ queryKey: ['address-books'] })
+      queryClient.invalidateQueries({ queryKey: ['my-address-books'] })
       setDeleteTarget(null)
     },
     onError: (err: Error) => toast.error(err.message),
   })
+
+  function handleSearch() {
+    setPage(1)
+    setSearchParams({ id: filterIdInput, hostname: filterHostnameInput })
+  }
+
+  function handleReset() {
+    setFilterIdInput('')
+    setFilterHostnameInput('')
+    setPage(1)
+    setSearchParams({ id: '', hostname: '' })
+  }
 
   function openAddDialog() {
     setEditingEntry(null)
@@ -154,7 +166,7 @@ function EntriesTab() {
     setDialogOpen(true)
   }
 
-  function openEditDialog(entry: AddressBook) {
+  function openEditDialog(entry: MyAddressBook) {
     setEditingEntry(entry)
     form.reset({
       id: entry.id,
@@ -175,13 +187,13 @@ function EntriesTab() {
     }
   }
 
-  const columns: ColumnDef<AddressBook>[] = [
-    { accessorKey: 'id', header: t('address_books.id') },
-    { accessorKey: 'alias', header: t('address_books.alias') },
-    { accessorKey: 'hostname', header: t('address_books.hostname') },
+  const columns: ColumnDef<MyAddressBook>[] = [
+    { accessorKey: 'id', header: t('my.ab_id') },
+    { accessorKey: 'alias', header: t('my.ab_alias') },
+    { accessorKey: 'hostname', header: t('my.ab_hostname') },
     {
       id: 'tags',
-      header: t('address_books.tags'),
+      header: t('my.ab_tags_label'),
       cell: ({ row }) => {
         const tags = row.original.tags
         if (!tags || tags.length === 0) return '—'
@@ -194,13 +206,8 @@ function EntriesTab() {
         )
       },
     },
-    { accessorKey: 'platform', header: t('address_books.platform') },
-    { accessorKey: 'user_id', header: t('address_books.user_id') },
-    {
-      id: 'collection',
-      header: t('address_books.collection'),
-      cell: ({ row }) => row.original.collection?.name ?? '—',
-    },
+    { accessorKey: 'platform', header: t('my.ab_platform') },
+    { accessorKey: 'note', header: t('my.ab_note') },
     {
       id: 'actions',
       header: t('common.actions'),
@@ -231,11 +238,11 @@ function EntriesTab() {
     <div className="space-y-4">
       <DataTableToolbar
         filters={[
-          { key: 'id', label: t('address_books.id'), value: filterIdInput, onChange: setFilterIdInput },
-          { key: 'hostname', label: t('address_books.hostname'), value: filterHostnameInput, onChange: setFilterHostnameInput },
+          { key: 'id', label: t('my.ab_id'), value: filterIdInput, onChange: setFilterIdInput },
+          { key: 'hostname', label: t('my.ab_hostname'), value: filterHostnameInput, onChange: setFilterHostnameInput },
         ]}
-        onSearch={() => { setPage(1); setSearchParams({ id: filterIdInput, hostname: filterHostnameInput }) }}
-        onReset={() => { setFilterIdInput(''); setFilterHostnameInput(''); setPage(1); setSearchParams({ id: '', hostname: '' }) }}
+        onSearch={handleSearch}
+        onReset={handleReset}
         actions={
           <Button size="sm" onClick={openAddDialog}>
             <Plus className="size-4" />
@@ -266,7 +273,7 @@ function EntriesTab() {
                 name="id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('address_books.id')}</FormLabel>
+                    <FormLabel>{t('my.ab_id')}</FormLabel>
                     <FormControl><Input {...field} disabled={!!editingEntry} /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -277,7 +284,7 @@ function EntriesTab() {
                 name="alias"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('address_books.alias')}</FormLabel>
+                    <FormLabel>{t('my.ab_alias')}</FormLabel>
                     <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -288,7 +295,7 @@ function EntriesTab() {
                 name="hostname"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('address_books.hostname')}</FormLabel>
+                    <FormLabel>{t('my.ab_hostname')}</FormLabel>
                     <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -299,7 +306,7 @@ function EntriesTab() {
                 name="platform"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('address_books.platform')}</FormLabel>
+                    <FormLabel>{t('my.ab_platform')}</FormLabel>
                     <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -310,7 +317,7 @@ function EntriesTab() {
                 name="note"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('address_books.note')}</FormLabel>
+                    <FormLabel>{t('my.ab_note')}</FormLabel>
                     <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -321,7 +328,7 @@ function EntriesTab() {
                 name="collection_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('address_books.collection')}</FormLabel>
+                    <FormLabel>{t('my.ab_rule_collection')}</FormLabel>
                     <Select
                       value={field.value != null ? String(field.value) : ''}
                       onValueChange={(val) => field.onChange(val === '' ? undefined : Number(val))}
@@ -376,13 +383,14 @@ function TagsTab() {
 
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(20)
+
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [editingTag, setEditingTag] = useState<Tag | null>(null)
+  const [editingTag, setEditingTag] = useState<MyTag | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<number | null>(null)
 
   const { data, isLoading } = useQuery({
-    queryKey: ['tags', page, pageSize],
-    queryFn: () => getTags({ page, page_size: pageSize }),
+    queryKey: ['my-tags', page, pageSize],
+    queryFn: () => getMyTags({ page, page_size: pageSize }),
   })
 
   const tags = data?.list ?? []
@@ -394,30 +402,30 @@ function TagsTab() {
   })
 
   const createMutation = useMutation({
-    mutationFn: (data: TagFormValues) => createTag(data),
+    mutationFn: (data: TagFormValues) => createMyTag(data),
     onSuccess: () => {
       toast.success(t('common.success'))
-      queryClient.invalidateQueries({ queryKey: ['tags'] })
+      queryClient.invalidateQueries({ queryKey: ['my-tags'] })
       setDialogOpen(false)
     },
     onError: (err: Error) => toast.error(err.message),
   })
 
   const updateMutation = useMutation({
-    mutationFn: (data: TagFormValues & { id: number }) => updateTag(data),
+    mutationFn: (data: TagFormValues & { id: number }) => updateMyTag(data),
     onSuccess: () => {
       toast.success(t('common.success'))
-      queryClient.invalidateQueries({ queryKey: ['tags'] })
+      queryClient.invalidateQueries({ queryKey: ['my-tags'] })
       setDialogOpen(false)
     },
     onError: (err: Error) => toast.error(err.message),
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => deleteTag(id),
+    mutationFn: (id: number) => deleteMyTag(id),
     onSuccess: () => {
       toast.success(t('common.success'))
-      queryClient.invalidateQueries({ queryKey: ['tags'] })
+      queryClient.invalidateQueries({ queryKey: ['my-tags'] })
       setDeleteTarget(null)
     },
     onError: (err: Error) => toast.error(err.message),
@@ -429,7 +437,7 @@ function TagsTab() {
     setDialogOpen(true)
   }
 
-  function openEditDialog(tag: Tag) {
+  function openEditDialog(tag: MyTag) {
     setEditingTag(tag)
     form.reset({ name: tag.name, color: tag.color })
     setDialogOpen(true)
@@ -443,11 +451,11 @@ function TagsTab() {
     }
   }
 
-  const columns: ColumnDef<Tag>[] = [
-    { accessorKey: 'name', header: t('address_books.name') },
+  const columns: ColumnDef<MyTag>[] = [
+    { accessorKey: 'name', header: t('my.ab_tag_name') },
     {
       id: 'color',
-      header: t('address_books.color'),
+      header: t('my.ab_tag_color'),
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <span
@@ -460,7 +468,6 @@ function TagsTab() {
         </div>
       ),
     },
-    { accessorKey: 'user_id', header: t('address_books.user_id') },
     {
       id: 'actions',
       header: t('common.actions'),
@@ -518,7 +525,7 @@ function TagsTab() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('address_books.name')}</FormLabel>
+                    <FormLabel>{t('my.ab_tag_name')}</FormLabel>
                     <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -529,7 +536,7 @@ function TagsTab() {
                 name="color"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('address_books.color')}</FormLabel>
+                    <FormLabel>{t('my.ab_tag_color')}</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -577,13 +584,14 @@ function CollectionsTab() {
 
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(20)
+
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [editingCollection, setEditingCollection] = useState<AddressBookCollection | null>(null)
+  const [editingCollection, setEditingCollection] = useState<MyAddressBookCollection | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<number | null>(null)
 
   const { data, isLoading } = useQuery({
-    queryKey: ['collections', page, pageSize],
-    queryFn: () => getCollections({ page, page_size: pageSize }),
+    queryKey: ['my-collections', page, pageSize],
+    queryFn: () => getMyCollections({ page, page_size: pageSize }),
   })
 
   const collections = data?.list ?? []
@@ -595,30 +603,30 @@ function CollectionsTab() {
   })
 
   const createMutation = useMutation({
-    mutationFn: (data: CollectionFormValues) => createCollection(data),
+    mutationFn: (data: CollectionFormValues) => createMyCollection(data),
     onSuccess: () => {
       toast.success(t('common.success'))
-      queryClient.invalidateQueries({ queryKey: ['collections'] })
+      queryClient.invalidateQueries({ queryKey: ['my-collections'] })
       setDialogOpen(false)
     },
     onError: (err: Error) => toast.error(err.message),
   })
 
   const updateMutation = useMutation({
-    mutationFn: (data: CollectionFormValues & { id: number }) => updateCollection(data),
+    mutationFn: (data: CollectionFormValues & { id: number }) => updateMyCollection(data),
     onSuccess: () => {
       toast.success(t('common.success'))
-      queryClient.invalidateQueries({ queryKey: ['collections'] })
+      queryClient.invalidateQueries({ queryKey: ['my-collections'] })
       setDialogOpen(false)
     },
     onError: (err: Error) => toast.error(err.message),
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => deleteCollection(id),
+    mutationFn: (id: number) => deleteMyCollection(id),
     onSuccess: () => {
       toast.success(t('common.success'))
-      queryClient.invalidateQueries({ queryKey: ['collections'] })
+      queryClient.invalidateQueries({ queryKey: ['my-collections'] })
       setDeleteTarget(null)
     },
     onError: (err: Error) => toast.error(err.message),
@@ -630,7 +638,7 @@ function CollectionsTab() {
     setDialogOpen(true)
   }
 
-  function openEditDialog(collection: AddressBookCollection) {
+  function openEditDialog(collection: MyAddressBookCollection) {
     setEditingCollection(collection)
     form.reset({ name: collection.name })
     setDialogOpen(true)
@@ -646,12 +654,15 @@ function CollectionsTab() {
 
   function formatDate(value: string | number): string {
     if (!value) return '—'
-    try { return new Date(value).toLocaleString() } catch { return String(value) }
+    try {
+      return new Date(value).toLocaleString()
+    } catch {
+      return String(value)
+    }
   }
 
-  const columns: ColumnDef<AddressBookCollection>[] = [
-    { accessorKey: 'name', header: t('address_books.name') },
-    { accessorKey: 'user_id', header: t('address_books.user_id') },
+  const columns: ColumnDef<MyAddressBookCollection>[] = [
+    { accessorKey: 'name', header: t('my.ab_collection_name') },
     {
       id: 'created_at',
       header: t('common.created_at'),
@@ -714,7 +725,7 @@ function CollectionsTab() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('address_books.name')}</FormLabel>
+                    <FormLabel>{t('my.ab_collection_name')}</FormLabel>
                     <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -752,29 +763,34 @@ const ruleSchema = z.object({
 
 type RuleFormValues = z.infer<typeof ruleSchema>
 
+const RULE_TYPE_MAP: Record<number, string> = { 1: 'User', 2: 'Group' }
+const RULE_LEVEL_MAP: Record<number, string> = { 1: 'Read', 2: 'Read/Write', 3: 'Full Control' }
+
 function RulesTab() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
 
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(20)
+
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [editingRule, setEditingRule] = useState<AddressBookCollectionRule | null>(null)
+  const [editingRule, setEditingRule] = useState<MyAddressBookCollectionRule | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<number | null>(null)
 
   const { data, isLoading } = useQuery({
-    queryKey: ['collection-rules', page, pageSize],
-    queryFn: () => getCollectionRules({ page, page_size: pageSize }),
+    queryKey: ['my-collection-rules', page, pageSize],
+    queryFn: () => getMyCollectionRules({ page, page_size: pageSize }),
   })
 
   const { data: collectionsData } = useQuery({
-    queryKey: ['collections-all'],
-    queryFn: () => getCollections({ page: 1, page_size: 1000 }),
+    queryKey: ['my-collections-all'],
+    queryFn: () => getMyCollections({ page: 1, page_size: 1000 }),
   })
 
   const rules = data?.list ?? []
   const total = data?.total ?? 0
   const collections = collectionsData?.list ?? []
+
   const collectionMap = new Map(collections.map((c) => [c.id, c.name]))
 
   const form = useForm<RuleFormValues, unknown, RuleFormValues>({
@@ -783,30 +799,30 @@ function RulesTab() {
   })
 
   const createMutation = useMutation({
-    mutationFn: (data: RuleFormValues) => createCollectionRule(data),
+    mutationFn: (data: RuleFormValues) => createMyCollectionRule(data),
     onSuccess: () => {
       toast.success(t('common.success'))
-      queryClient.invalidateQueries({ queryKey: ['collection-rules'] })
+      queryClient.invalidateQueries({ queryKey: ['my-collection-rules'] })
       setDialogOpen(false)
     },
     onError: (err: Error) => toast.error(err.message),
   })
 
   const updateMutation = useMutation({
-    mutationFn: (data: RuleFormValues & { id: number }) => updateCollectionRule(data),
+    mutationFn: (data: RuleFormValues & { id: number }) => updateMyCollectionRule(data),
     onSuccess: () => {
       toast.success(t('common.success'))
-      queryClient.invalidateQueries({ queryKey: ['collection-rules'] })
+      queryClient.invalidateQueries({ queryKey: ['my-collection-rules'] })
       setDialogOpen(false)
     },
     onError: (err: Error) => toast.error(err.message),
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => deleteCollectionRule(id),
+    mutationFn: (id: number) => deleteMyCollectionRule(id),
     onSuccess: () => {
       toast.success(t('common.success'))
-      queryClient.invalidateQueries({ queryKey: ['collection-rules'] })
+      queryClient.invalidateQueries({ queryKey: ['my-collection-rules'] })
       setDeleteTarget(null)
     },
     onError: (err: Error) => toast.error(err.message),
@@ -818,7 +834,7 @@ function RulesTab() {
     setDialogOpen(true)
   }
 
-  function openEditDialog(rule: AddressBookCollectionRule) {
+  function openEditDialog(rule: MyAddressBookCollectionRule) {
     setEditingRule(rule)
     form.reset({
       collection_id: rule.collection_id,
@@ -837,38 +853,30 @@ function RulesTab() {
     }
   }
 
-  const columns: ColumnDef<AddressBookCollectionRule>[] = [
+  const columns: ColumnDef<MyAddressBookCollectionRule>[] = [
     {
       id: 'collection_id',
-      header: t('address_books.collection'),
+      header: t('my.ab_rule_collection'),
       cell: ({ row }) => collectionMap.get(row.original.collection_id) ?? String(row.original.collection_id),
     },
     {
       id: 'type',
-      header: t('address_books.type_user'),
+      header: t('my.ab_rule_type'),
       cell: ({ row }) => (
-        <Badge variant="secondary">
-          {row.original.type === 1 ? t('address_books.type_user') : t('address_books.type_group')}
-        </Badge>
+        <Badge variant="secondary">{RULE_TYPE_MAP[row.original.type] ?? String(row.original.type)}</Badge>
       ),
     },
     {
       accessorKey: 'to_id',
-      header: t('address_books.target_id'),
+      header: t('my.ab_rule_target'),
     },
     {
       id: 'rule',
-      header: t('address_books.permission'),
-      cell: ({ row }) => {
-        const labels: Record<number, string> = {
-          1: t('address_books.rule_read'),
-          2: t('address_books.rule_readwrite'),
-          3: t('address_books.rule_full'),
-        }
-        return <Badge variant="outline">{labels[row.original.rule] ?? String(row.original.rule)}</Badge>
-      },
+      header: t('my.ab_rule_level'),
+      cell: ({ row }) => (
+        <Badge variant="outline">{RULE_LEVEL_MAP[row.original.rule] ?? String(row.original.rule)}</Badge>
+      ),
     },
-    { accessorKey: 'user_id', header: t('address_books.user_id') },
     {
       id: 'actions',
       header: t('common.actions'),
@@ -926,7 +934,7 @@ function RulesTab() {
                 name="collection_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('address_books.collection')}</FormLabel>
+                    <FormLabel>{t('my.ab_rule_collection')}</FormLabel>
                     <Select
                       value={field.value ? String(field.value) : ''}
                       onValueChange={(val) => field.onChange(Number(val))}
@@ -949,7 +957,7 @@ function RulesTab() {
                 name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('address_books.type_user')}</FormLabel>
+                    <FormLabel>{t('my.ab_rule_type')}</FormLabel>
                     <Select
                       value={String(field.value)}
                       onValueChange={(val) => field.onChange(Number(val))}
@@ -958,8 +966,8 @@ function RulesTab() {
                         <SelectTrigger><SelectValue /></SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="1">{t('address_books.type_user')}</SelectItem>
-                        <SelectItem value="2">{t('address_books.type_group')}</SelectItem>
+                        <SelectItem value="1">User</SelectItem>
+                        <SelectItem value="2">Group</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -971,7 +979,7 @@ function RulesTab() {
                 name="to_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('address_books.target_id')}</FormLabel>
+                    <FormLabel>{t('my.ab_rule_target')}</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -988,7 +996,7 @@ function RulesTab() {
                 name="rule"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('address_books.permission')}</FormLabel>
+                    <FormLabel>{t('my.ab_rule_level')}</FormLabel>
                     <Select
                       value={String(field.value)}
                       onValueChange={(val) => field.onChange(Number(val))}
@@ -997,9 +1005,9 @@ function RulesTab() {
                         <SelectTrigger><SelectValue /></SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="1">{t('address_books.rule_read')}</SelectItem>
-                        <SelectItem value="2">{t('address_books.rule_readwrite')}</SelectItem>
-                        <SelectItem value="3">{t('address_books.rule_full')}</SelectItem>
+                        <SelectItem value="1">Read</SelectItem>
+                        <SelectItem value="2">Read/Write</SelectItem>
+                        <SelectItem value="3">Full Control</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -1029,17 +1037,17 @@ function RulesTab() {
 
 // ─── Main Page ───────────────────────────────────────────────────────────────
 
-export default function AddressBooksPage() {
+export default function MyAddressBooksPage() {
   const { t } = useTranslation()
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">{t('address_books.title')}</h1>
+      <h1 className="text-2xl font-bold">{t('my.address_books_title')}</h1>
       <Tabs defaultValue="entries">
         <TabsList>
-          <TabsTrigger value="entries">{t('address_books.entries')}</TabsTrigger>
-          <TabsTrigger value="tags">{t('address_books.tags')}</TabsTrigger>
-          <TabsTrigger value="collections">{t('address_books.collections')}</TabsTrigger>
-          <TabsTrigger value="rules">{t('address_books.rules')}</TabsTrigger>
+          <TabsTrigger value="entries">{t('my.ab_entries')}</TabsTrigger>
+          <TabsTrigger value="tags">{t('my.ab_tags')}</TabsTrigger>
+          <TabsTrigger value="collections">{t('my.ab_collections')}</TabsTrigger>
+          <TabsTrigger value="rules">{t('my.ab_rules')}</TabsTrigger>
         </TabsList>
         <TabsContent value="entries"><EntriesTab /></TabsContent>
         <TabsContent value="tags"><TagsTab /></TabsContent>

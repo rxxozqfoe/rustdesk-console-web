@@ -11,6 +11,22 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  optimizeDeps: {
+    include: [
+      '@base-ui/react',
+      'lucide-react',
+      'react-hook-form',
+      '@hookform/resolvers',
+      '@tanstack/react-query',
+      '@tanstack/react-table',
+      'react-router',
+      'zod',
+      'axios',
+      'zustand',
+      'i18next',
+      'react-i18next',
+    ],
+  },
   server: {
     proxy: {
       '/api': {

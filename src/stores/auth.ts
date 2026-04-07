@@ -30,15 +30,16 @@ export const useAuthStore = create<AuthState>()(
         isAdmin: false,
         setAuth: (user, token) => set({ user, token, isAdmin: user.is_admin }, false, 'setAuth'),
         setAuthFromLogin: (res) => {
+          const isAdmin = res.route_names?.includes('*') ?? false
           const user: AuthUser = {
             id: 0,
             username: res.username,
             email: res.email,
             nickname: res.nickname,
             avatar: res.avatar,
-            is_admin: true,
+            is_admin: isAdmin,
           }
-          set({ user, token: res.token, isAdmin: true }, false, 'setAuthFromLogin')
+          set({ user, token: res.token, isAdmin }, false, 'setAuthFromLogin')
         },
         clearAuth: () => set({ user: null, token: null, isAdmin: false }, false, 'clearAuth'),
       }),

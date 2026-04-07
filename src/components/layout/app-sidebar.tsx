@@ -11,6 +11,8 @@ import {
   Package,
   Settings,
   ChevronRight,
+  Share2,
+  ClipboardList,
 } from 'lucide-react'
 import {
   Sidebar,
@@ -38,12 +40,14 @@ interface NavItem {
   labelKey: string
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   path: string
+  adminOnly?: boolean
 }
 
 interface NavGroup {
   labelKey: string
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   children: NavItem[]
+  adminOnly?: boolean
 }
 
 type NavEntry = NavItem | NavGroup
@@ -54,23 +58,35 @@ function isNavGroup(entry: NavEntry): entry is NavGroup {
 
 const navItems: NavEntry[] = [
   { labelKey: 'sidebar.welcome', icon: Home, path: '/' },
-  { labelKey: 'sidebar.devices', icon: Monitor, path: '/devices' },
+  {
+    labelKey: 'sidebar.my_space',
+    icon: Users,
+    children: [
+      { labelKey: 'sidebar.my_devices', icon: Monitor, path: '/my/devices' },
+      { labelKey: 'sidebar.my_address_books', icon: BookOpen, path: '/my/address-books' },
+      { labelKey: 'sidebar.my_share_records', icon: Share2, path: '/my/share-records' },
+      { labelKey: 'sidebar.my_login_logs', icon: ClipboardList, path: '/my/login-logs' },
+    ],
+  },
+  { labelKey: 'sidebar.devices', icon: Monitor, path: '/devices', adminOnly: true },
   {
     labelKey: 'sidebar.logs',
     icon: FileText,
+    adminOnly: true,
     children: [
       { labelKey: 'sidebar.logs_connection', icon: FileText, path: '/logs/connection' },
       { labelKey: 'sidebar.logs_file', icon: FileText, path: '/logs/file' },
     ],
   },
-  { labelKey: 'sidebar.users', icon: Users, path: '/users' },
-  { labelKey: 'sidebar.groups', icon: FolderTree, path: '/groups' },
-  { labelKey: 'sidebar.address_books', icon: BookOpen, path: '/address-books' },
-  { labelKey: 'sidebar.strategies', icon: Shield, path: '/strategies' },
-  { labelKey: 'sidebar.custom_clients', icon: Package, path: '/custom-clients' },
+  { labelKey: 'sidebar.users', icon: Users, path: '/users', adminOnly: true },
+  { labelKey: 'sidebar.groups', icon: FolderTree, path: '/groups', adminOnly: true },
+  { labelKey: 'sidebar.address_books', icon: BookOpen, path: '/address-books', adminOnly: true },
+  { labelKey: 'sidebar.strategies', icon: Shield, path: '/strategies', adminOnly: true },
+  { labelKey: 'sidebar.custom_clients', icon: Package, path: '/custom-clients', adminOnly: true },
   {
     labelKey: 'sidebar.settings',
     icon: Settings,
+    adminOnly: true,
     children: [
       { labelKey: 'sidebar.settings_oauth', icon: Settings, path: '/settings/oauth' },
       { labelKey: 'sidebar.settings_tokens', icon: Settings, path: '/settings/tokens' },
@@ -89,7 +105,10 @@ export function AppSidebar() {
   const { t } = useTranslation()
   const location = useLocation()
   const user = useAuthStore((s) => s.user)
+  const isAdmin = useAuthStore((s) => s.isAdmin)
   const pathname = location.pathname
+
+  const visibleNavItems = navItems.filter((entry) => !entry.adminOnly || isAdmin)
 
   const userInitials = user?.username
     ? user.username.slice(0, 2).toUpperCase()
@@ -109,7 +128,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>{t('sidebar.welcome')}</SidebarGroupLabel>
           <SidebarMenu>
-            {navItems.map((entry) => {
+            {visibleNavItems.map((entry) => {
               if (isNavGroup(entry)) {
                 const groupActive = isGroupActive(entry, pathname)
                 const Icon = entry.icon

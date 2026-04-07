@@ -27,8 +27,13 @@ api.interceptors.response.use(
       return data
     }
     if (code === 403) {
-      localStorage.removeItem('auth-storage')
-      window.location.href = '/login'
+      // Only clear auth and redirect for authentication failures (token missing/invalid).
+      // Permission errors (e.g. non-admin) should surface as regular errors.
+      const isAuthFailure = !message || message === 'NeedLogin' || message.includes('NeedLogin')
+      if (isAuthFailure) {
+        localStorage.removeItem('auth-storage')
+        window.location.href = '/login'
+      }
       return Promise.reject(new Error(message || 'Unauthorized'))
     }
     return Promise.reject(new Error(message || 'Request failed'))

@@ -1,28 +1,36 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useReactTable, getCoreRowModel, type ColumnDef } from '@tanstack/react-table'
+import {
+  useReactTable,
+  getCoreRowModel,
+  type ColumnDef,
+} from '@tanstack/react-table'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { DataTable } from '@/components/data-table/data-table'
 import { DataTablePagination } from '@/components/data-table/data-table-pagination'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { getShareRecords, deleteShareRecord, batchDeleteShareRecords } from '@/services/share-record.service'
-import type { ShareRecord } from '@/types/share-record'
+import {
+  getMyLoginLogs,
+  deleteMyLoginLog,
+  batchDeleteMyLoginLogs,
+} from '@/services/my-login-log.service'
+import type { MyLoginLog } from '@/types/my-login-log'
 
 function formatDate(value: string | number): string {
   if (!value) return '—'
-  try { return new Date(value).toLocaleString() } catch { return String(value) }
+  try {
+    return new Date(value).toLocaleString()
+  } catch {
+    return String(value)
+  }
 }
 
-function formatTimestamp(ts: number): string {
-  if (!ts) return '—'
-  return new Date(ts * 1000).toLocaleString()
-}
-
-export default function ShareRecordsPage() {
+export default function MyLoginLogsPage() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
 
@@ -39,50 +47,50 @@ export default function ShareRecordsPage() {
 
   // Query
   const { data, isLoading } = useQuery({
-    queryKey: ['share-records', page, pageSize],
-    queryFn: () => getShareRecords({ page, page_size: pageSize }),
+    queryKey: ['my-login-logs', page, pageSize],
+    queryFn: () => getMyLoginLogs({ page, page_size: pageSize }),
   })
 
-  const list = data?.list ?? []
+  const logs = data?.list ?? []
   const total = data?.total ?? 0
 
   // Mutations
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => deleteShareRecord(id),
+    mutationFn: (id: number) => deleteMyLoginLog(id),
     onSuccess: () => {
       toast.success(t('common.success'))
-      queryClient.invalidateQueries({ queryKey: ['share-records'] })
+      queryClient.invalidateQueries({ queryKey: ['my-login-logs'] })
       setDeleteTarget(null)
     },
     onError: (err: Error) => toast.error(err.message),
   })
 
   const batchDeleteMutation = useMutation({
-    mutationFn: (ids: number[]) => batchDeleteShareRecords(ids),
+    mutationFn: (ids: number[]) => batchDeleteMyLoginLogs(ids),
     onSuccess: () => {
       toast.success(t('common.success'))
-      queryClient.invalidateQueries({ queryKey: ['share-records'] })
+      queryClient.invalidateQueries({ queryKey: ['my-login-logs'] })
       setSelectedIds(new Set())
       setBatchDeleteOpen(false)
     },
     onError: (err: Error) => toast.error(err.message),
   })
 
-  // Row selection helpers
-  const isAllSelected = list.length > 0 && list.every((r) => selectedIds.has(r.id))
-  const isIndeterminate = list.some((r) => selectedIds.has(r.id)) && !isAllSelected
+  // Selection helpers
+  const isAllSelected = logs.length > 0 && logs.every((l) => selectedIds.has(l.id))
+  const isIndeterminate = logs.some((l) => selectedIds.has(l.id)) && !isAllSelected
 
   function toggleAll(checked: boolean) {
     if (checked) {
       setSelectedIds((prev) => {
         const next = new Set(prev)
-        list.forEach((r) => next.add(r.id))
+        logs.forEach((l) => next.add(l.id))
         return next
       })
     } else {
       setSelectedIds((prev) => {
         const next = new Set(prev)
-        list.forEach((r) => next.delete(r.id))
+        logs.forEach((l) => next.delete(l.id))
         return next
       })
     }
@@ -98,7 +106,7 @@ export default function ShareRecordsPage() {
   }
 
   // Columns
-  const columns: ColumnDef<ShareRecord>[] = [
+  const columns: ColumnDef<MyLoginLog>[] = [
     {
       id: 'select',
       header: () => (
@@ -118,28 +126,25 @@ export default function ShareRecordsPage() {
       ),
     },
     {
-      accessorKey: 'user_id',
-      header: t('settings.share_records.user_id'),
+      accessorKey: 'client',
+      header: t('my.log_client'),
+      cell: ({ row }) => <Badge variant="secondary">{row.original.client}</Badge>,
     },
     {
-      accessorKey: 'peer_id',
-      header: t('settings.share_records.peer_id'),
+      accessorKey: 'ip',
+      header: t('my.log_ip'),
     },
     {
-      accessorKey: 'share_token',
-      header: t('settings.share_records.share_token'),
+      accessorKey: 'type',
+      header: t('my.log_type'),
+      cell: ({ row }) => <Badge variant="outline">{row.original.type}</Badge>,
     },
     {
-      accessorKey: 'password_type',
-      header: t('settings.share_records.password_type'),
+      accessorKey: 'platform',
+      header: t('my.log_platform'),
     },
     {
-      accessorKey: 'expire',
-      header: t('settings.share_records.expire'),
-      cell: ({ row }) => formatTimestamp(row.original.expire),
-    },
-    {
-      accessorKey: 'created_at',
+      id: 'created_at',
       header: t('common.created_at'),
       cell: ({ row }) => formatDate(row.original.created_at),
     },
@@ -147,19 +152,21 @@ export default function ShareRecordsPage() {
       id: 'actions',
       header: t('common.actions'),
       cell: ({ row }) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setDeleteTarget(row.original.id)}
-        >
-          <Trash2 className="size-4 text-destructive" />
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setDeleteTarget(row.original.id)}
+          >
+            <Trash2 className="size-4 text-destructive" />
+          </Button>
+        </div>
       ),
     },
   ]
 
   const table = useReactTable({
-    data: list,
+    data: logs,
     columns,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
@@ -168,9 +175,10 @@ export default function ShareRecordsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{t('settings.share_records.title')}</h1>
-        {selectedIds.size > 0 && (
+      <h1 className="text-2xl font-bold">{t('my.login_logs_title')}</h1>
+
+      {selectedIds.size > 0 && (
+        <div className="flex items-center gap-2">
           <Button
             variant="destructive"
             size="sm"
@@ -179,8 +187,8 @@ export default function ShareRecordsPage() {
             <Trash2 className="size-4" />
             {t('common.batch_delete')} ({selectedIds.size})
           </Button>
-        )}
-      </div>
+        </div>
+      )}
 
       <DataTable table={table} columns={columns} isLoading={isLoading} />
 
