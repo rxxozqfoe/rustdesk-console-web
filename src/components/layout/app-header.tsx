@@ -58,9 +58,7 @@ export function AppHeader() {
 
   const segments = location.pathname.split('/').filter(Boolean)
 
-  const userInitials = user?.username
-    ? user.username.slice(0, 2).toUpperCase()
-    : 'U'
+  const userInitials = user?.username ? user.username.slice(0, 2).toUpperCase() : 'U'
 
   function handleLogout() {
     clearAuth()
@@ -113,10 +111,7 @@ export function AppHeader() {
           />
           <DropdownMenuContent align="end">
             {languages.map((lang) => (
-              <DropdownMenuItem
-                key={lang.code}
-                onSelect={() => i18n.changeLanguage(lang.code)}
-              >
+              <DropdownMenuItem key={lang.code} onSelect={() => i18n.changeLanguage(lang.code)}>
                 {lang.label}
               </DropdownMenuItem>
             ))}
@@ -124,11 +119,7 @@ export function AppHeader() {
         </DropdownMenu>
 
         <Button variant="ghost" size="icon-sm" onClick={toggleTheme}>
-          {theme === 'dark' ? (
-            <Sun className="size-4" />
-          ) : (
-            <Moon className="size-4" />
-          )}
+          {theme === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />}
         </Button>
 
         <DropdownMenu>
@@ -147,12 +138,8 @@ export function AppHeader() {
                 <AvatarFallback>{userInitials}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col text-sm leading-tight">
-                <span className="font-medium">
-                  {user?.nickname || user?.username || 'User'}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {user?.email || ''}
-                </span>
+                <span className="font-medium">{user?.nickname || user?.username || 'User'}</span>
+                <span className="text-muted-foreground text-xs">{user?.email || ''}</span>
               </div>
             </div>
             <DropdownMenuSeparator />

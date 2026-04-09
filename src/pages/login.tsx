@@ -104,8 +104,7 @@ export default function LoginPage() {
       setAuthFromLogin(res)
       navigate('/', { replace: true })
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : t('common.error', 'Login failed')
+      const message = err instanceof Error ? err.message : t('common.error', 'Login failed')
       toast.error(message)
       if (loginOptions?.need_captcha) {
         loadCaptcha()
@@ -125,11 +124,11 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center bg-muted/40 px-4">
+    <div className="bg-muted/40 flex min-h-svh flex-col items-center justify-center px-4">
       <div className="w-full max-w-sm space-y-6">
         {/* Logo */}
         <div className="flex flex-col items-center gap-3">
-          <div className="flex size-12 items-center justify-center rounded-xl bg-primary text-2xl font-bold text-primary-foreground">
+          <div className="bg-primary text-primary-foreground flex size-12 items-center justify-center rounded-xl text-2xl font-bold">
             R
           </div>
           <h1 className="text-xl font-semibold tracking-tight">RustDesk</h1>
@@ -231,7 +230,7 @@ export default function LoginPage() {
                               type="button"
                               onClick={loadCaptcha}
                               title="Click to refresh captcha"
-                              className="flex-shrink-0 cursor-pointer overflow-hidden rounded-lg border border-input"
+                              className="border-input flex-shrink-0 cursor-pointer overflow-hidden rounded-lg border"
                             >
                               <img
                                 src={`data:image/png;base64,${captcha.b64}`}
@@ -252,25 +251,18 @@ export default function LoginPage() {
                   <Checkbox
                     id="remember-me"
                     checked={rememberMe}
-                    onCheckedChange={(checked) =>
-                      setRememberMe(checked)
-                    }
+                    onCheckedChange={(checked) => setRememberMe(checked)}
                   />
                   <label
                     htmlFor="remember-me"
-                    className="cursor-pointer select-none text-sm text-muted-foreground"
+                    className="text-muted-foreground cursor-pointer text-sm select-none"
                   >
                     {t('login.remember_me')}
                   </label>
                 </div>
 
                 {/* Submit */}
-                <Button
-                  type="submit"
-                  className="w-full"
-                  size="lg"
-                  disabled={isSubmitting}
-                >
+                <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
                   {isSubmitting ? (
                     <span className="flex items-center gap-2">
                       <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
@@ -285,11 +277,9 @@ export default function LoginPage() {
                 {loginOptions?.ops && loginOptions.ops.length > 0 && (
                   <div className="space-y-3">
                     <div className="relative flex items-center">
-                      <div className="flex-1 border-t border-border" />
-                      <span className="mx-3 text-xs text-muted-foreground">
-                        {t('login.or')}
-                      </span>
-                      <div className="flex-1 border-t border-border" />
+                      <div className="border-border flex-1 border-t" />
+                      <span className="text-muted-foreground mx-3 text-xs">{t('login.or')}</span>
+                      <div className="border-border flex-1 border-t" />
                     </div>
                     <div className="flex flex-col gap-2">
                       {loginOptions.ops.map((provider) => (
@@ -313,7 +303,7 @@ export default function LoginPage() {
         </Card>
 
         {/* Footer */}
-        <p className="text-center text-xs text-muted-foreground">
+        <p className="text-muted-foreground text-center text-xs">
           &copy; {new Date().getFullYear()} RustDesk. All rights reserved.
         </p>
       </div>

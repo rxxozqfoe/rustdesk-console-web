@@ -1,11 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import {
-  useReactTable,
-  getCoreRowModel,
-  type ColumnDef,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, type ColumnDef } from '@tanstack/react-table'
 import { Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { DataTable } from '@/components/data-table/data-table'
@@ -153,12 +149,8 @@ export default function MyLoginLogsPage() {
       header: t('common.actions'),
       cell: ({ row }) => (
         <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setDeleteTarget(row.original.id)}
-          >
-            <Trash2 className="size-4 text-destructive" />
+          <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(row.original.id)}>
+            <Trash2 className="text-destructive size-4" />
           </Button>
         </div>
       ),
@@ -179,11 +171,7 @@ export default function MyLoginLogsPage() {
 
       {selectedIds.size > 0 && (
         <div className="flex items-center gap-2">
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => setBatchDeleteOpen(true)}
-          >
+          <Button variant="destructive" size="sm" onClick={() => setBatchDeleteOpen(true)}>
             <Trash2 className="size-4" />
             {t('common.batch_delete')} ({selectedIds.size})
           </Button>
@@ -206,8 +194,12 @@ export default function MyLoginLogsPage() {
       {/* Single Delete Confirmation */}
       <ConfirmDialog
         open={deleteTarget !== null}
-        onOpenChange={(open) => { if (!open) setDeleteTarget(null) }}
-        onConfirm={() => { if (deleteTarget !== null) deleteMutation.mutate(deleteTarget) }}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null)
+        }}
+        onConfirm={() => {
+          if (deleteTarget !== null) deleteMutation.mutate(deleteTarget)
+        }}
         loading={deleteMutation.isPending}
       />
 

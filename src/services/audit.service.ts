@@ -4,7 +4,10 @@ import type { AuditConn, AuditFile, AuditQuery } from '@/types/audit'
 
 // Connection Logs
 export function getAuditConns(params: AuditQuery) {
-  return apiGet<PaginatedData<AuditConn>>('/api/admin/audit_conn/list', params as Record<string, unknown>)
+  return apiGet<PaginatedData<AuditConn>>(
+    '/api/admin/audit_conn/list',
+    params as Record<string, unknown>,
+  )
 }
 
 export function deleteAuditConn(id: number) {
@@ -17,7 +20,10 @@ export function batchDeleteAuditConns(ids: number[]) {
 
 // File Transfer Logs
 export function getAuditFiles(params: AuditQuery) {
-  return apiGet<PaginatedData<AuditFile>>('/api/admin/audit_file/list', params as Record<string, unknown>)
+  return apiGet<PaginatedData<AuditFile>>(
+    '/api/admin/audit_file/list',
+    params as Record<string, unknown>,
+  )
 }
 
 export function deleteAuditFile(id: number) {

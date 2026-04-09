@@ -30,7 +30,9 @@ export function DataTableToolbar({ filters, onSearch, onReset, actions }: DataTa
           value={filter.value}
           onChange={(e) => filter.onChange(e.target.value)}
           className="h-8 w-[150px]"
-          onKeyDown={(e) => { if (e.key === 'Enter') onSearch() }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') onSearch()
+          }}
         />
       ))}
       {filters && filters.length > 0 && (

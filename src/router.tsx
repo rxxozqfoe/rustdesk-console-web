@@ -65,24 +65,150 @@ export function AppRouter() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<SuspenseWrapper><DashboardPage /></SuspenseWrapper>} />
-          <Route path="devices" element={<SuspenseWrapper><DevicesPage /></SuspenseWrapper>} />
-          <Route path="users" element={<SuspenseWrapper><UsersPage /></SuspenseWrapper>} />
-          <Route path="groups" element={<SuspenseWrapper><GroupsPage /></SuspenseWrapper>} />
-          <Route path="logs/connection" element={<SuspenseWrapper><ConnectionLogsPage /></SuspenseWrapper>} />
-          <Route path="logs/file" element={<SuspenseWrapper><FileLogsPage /></SuspenseWrapper>} />
-          <Route path="address-books" element={<SuspenseWrapper><AddressBooksPage /></SuspenseWrapper>} />
-          <Route path="strategies" element={<SuspenseWrapper><StrategiesPage /></SuspenseWrapper>} />
-          <Route path="custom-clients" element={<SuspenseWrapper><CustomClientsPage /></SuspenseWrapper>} />
-          <Route path="settings/oauth" element={<SuspenseWrapper><OAuthPage /></SuspenseWrapper>} />
-          <Route path="settings/tokens" element={<SuspenseWrapper><TokensPage /></SuspenseWrapper>} />
-          <Route path="settings/login-logs" element={<SuspenseWrapper><LoginLogsPage /></SuspenseWrapper>} />
-          <Route path="settings/share-records" element={<SuspenseWrapper><ShareRecordsPage /></SuspenseWrapper>} />
-          <Route path="settings/commands" element={<SuspenseWrapper><CommandsPage /></SuspenseWrapper>} />
-          <Route path="my/devices" element={<SuspenseWrapper><MyDevicesPage /></SuspenseWrapper>} />
-          <Route path="my/address-books" element={<SuspenseWrapper><MyAddressBooksPage /></SuspenseWrapper>} />
-          <Route path="my/share-records" element={<SuspenseWrapper><MyShareRecordsPage /></SuspenseWrapper>} />
-          <Route path="my/login-logs" element={<SuspenseWrapper><MyLoginLogsPage /></SuspenseWrapper>} />
+          <Route
+            index
+            element={
+              <SuspenseWrapper>
+                <DashboardPage />
+              </SuspenseWrapper>
+            }
+          />
+          <Route
+            path="devices"
+            element={
+              <SuspenseWrapper>
+                <DevicesPage />
+              </SuspenseWrapper>
+            }
+          />
+          <Route
+            path="users"
+            element={
+              <SuspenseWrapper>
+                <UsersPage />
+              </SuspenseWrapper>
+            }
+          />
+          <Route
+            path="groups"
+            element={
+              <SuspenseWrapper>
+                <GroupsPage />
+              </SuspenseWrapper>
+            }
+          />
+          <Route
+            path="logs/connection"
+            element={
+              <SuspenseWrapper>
+                <ConnectionLogsPage />
+              </SuspenseWrapper>
+            }
+          />
+          <Route
+            path="logs/file"
+            element={
+              <SuspenseWrapper>
+                <FileLogsPage />
+              </SuspenseWrapper>
+            }
+          />
+          <Route
+            path="address-books"
+            element={
+              <SuspenseWrapper>
+                <AddressBooksPage />
+              </SuspenseWrapper>
+            }
+          />
+          <Route
+            path="strategies"
+            element={
+              <SuspenseWrapper>
+                <StrategiesPage />
+              </SuspenseWrapper>
+            }
+          />
+          <Route
+            path="custom-clients"
+            element={
+              <SuspenseWrapper>
+                <CustomClientsPage />
+              </SuspenseWrapper>
+            }
+          />
+          <Route
+            path="settings/oauth"
+            element={
+              <SuspenseWrapper>
+                <OAuthPage />
+              </SuspenseWrapper>
+            }
+          />
+          <Route
+            path="settings/tokens"
+            element={
+              <SuspenseWrapper>
+                <TokensPage />
+              </SuspenseWrapper>
+            }
+          />
+          <Route
+            path="settings/login-logs"
+            element={
+              <SuspenseWrapper>
+                <LoginLogsPage />
+              </SuspenseWrapper>
+            }
+          />
+          <Route
+            path="settings/share-records"
+            element={
+              <SuspenseWrapper>
+                <ShareRecordsPage />
+              </SuspenseWrapper>
+            }
+          />
+          <Route
+            path="settings/commands"
+            element={
+              <SuspenseWrapper>
+                <CommandsPage />
+              </SuspenseWrapper>
+            }
+          />
+          <Route
+            path="my/devices"
+            element={
+              <SuspenseWrapper>
+                <MyDevicesPage />
+              </SuspenseWrapper>
+            }
+          />
+          <Route
+            path="my/address-books"
+            element={
+              <SuspenseWrapper>
+                <MyAddressBooksPage />
+              </SuspenseWrapper>
+            }
+          />
+          <Route
+            path="my/share-records"
+            element={
+              <SuspenseWrapper>
+                <MyShareRecordsPage />
+              </SuspenseWrapper>
+            }
+          />
+          <Route
+            path="my/login-logs"
+            element={
+              <SuspenseWrapper>
+                <MyLoginLogsPage />
+              </SuspenseWrapper>
+            }
+          />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

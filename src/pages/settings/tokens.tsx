@@ -9,12 +9,20 @@ import { DataTablePagination } from '@/components/data-table/data-table-paginati
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { getUserTokens, deleteUserToken, batchDeleteUserTokens } from '@/services/user-token.service'
+import {
+  getUserTokens,
+  deleteUserToken,
+  batchDeleteUserTokens,
+} from '@/services/user-token.service'
 import type { UserToken } from '@/types/user-token'
 
 function formatDate(value: string | number): string {
   if (!value) return '—'
-  try { return new Date(value).toLocaleString() } catch { return String(value) }
+  try {
+    return new Date(value).toLocaleString()
+  } catch {
+    return String(value)
+  }
 }
 
 function formatTimestamp(ts: number): string {
@@ -152,12 +160,8 @@ export default function TokensPage() {
       id: 'actions',
       header: t('common.actions'),
       cell: ({ row }) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setDeleteTarget(row.original.id)}
-        >
-          <Trash2 className="size-4 text-destructive" />
+        <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(row.original.id)}>
+          <Trash2 className="text-destructive size-4" />
         </Button>
       ),
     },
@@ -176,11 +180,7 @@ export default function TokensPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{t('settings.tokens.title')}</h1>
         {selectedIds.size > 0 && (
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => setBatchDeleteOpen(true)}
-          >
+          <Button variant="destructive" size="sm" onClick={() => setBatchDeleteOpen(true)}>
             <Trash2 className="size-4" />
             {t('common.batch_delete')} ({selectedIds.size})
           </Button>
@@ -203,8 +203,12 @@ export default function TokensPage() {
       {/* Single Delete Confirmation */}
       <ConfirmDialog
         open={deleteTarget !== null}
-        onOpenChange={(open) => { if (!open) setDeleteTarget(null) }}
-        onConfirm={() => { if (deleteTarget !== null) deleteMutation.mutate(deleteTarget) }}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null)
+        }}
+        onConfirm={() => {
+          if (deleteTarget !== null) deleteMutation.mutate(deleteTarget)
+        }}
         loading={deleteMutation.isPending}
       />
 

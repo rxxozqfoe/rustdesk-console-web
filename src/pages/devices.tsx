@@ -1,11 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import {
-  useReactTable,
-  getCoreRowModel,
-  type ColumnDef,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, type ColumnDef } from '@tanstack/react-table'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -41,7 +37,13 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { getPeers, createPeer, updatePeer, deletePeer, batchDeletePeers } from '@/services/peer.service'
+import {
+  getPeers,
+  createPeer,
+  updatePeer,
+  deletePeer,
+  batchDeletePeers,
+} from '@/services/peer.service'
 import { getGroups } from '@/services/group.service'
 import type { Peer, PeerForm } from '@/types/peer'
 import type { DeviceGroup } from '@/types/group'
@@ -302,19 +304,11 @@ export default function DevicesPage() {
       header: t('common.actions'),
       cell: ({ row }) => (
         <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => openEditDialog(row.original)}
-          >
+          <Button variant="ghost" size="sm" onClick={() => openEditDialog(row.original)}>
             <Pencil className="size-4" />
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setDeleteTarget(row.original.row_id)}
-          >
-            <Trash2 className="size-4 text-destructive" />
+          <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(row.original.row_id)}>
+            <Trash2 className="text-destructive size-4" />
           </Button>
         </div>
       ),
@@ -329,8 +323,7 @@ export default function DevicesPage() {
     rowCount: total,
   })
 
-  const isMutating =
-    createMutation.isPending || updateMutation.isPending
+  const isMutating = createMutation.isPending || updateMutation.isPending
 
   return (
     <div className="space-y-4">
@@ -362,11 +355,7 @@ export default function DevicesPage() {
         actions={
           <>
             {selectedIds.size > 0 && (
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => setBatchDeleteOpen(true)}
-              >
+              <Button variant="destructive" size="sm" onClick={() => setBatchDeleteOpen(true)}>
                 <Trash2 className="size-4" />
                 {t('common.batch_delete')} ({selectedIds.size})
               </Button>
@@ -396,9 +385,7 @@ export default function DevicesPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>
-              {editingPeer ? t('common.edit') : t('common.add')}
-            </DialogTitle>
+            <DialogTitle>{editingPeer ? t('common.edit') : t('common.add')}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
@@ -436,9 +423,7 @@ export default function DevicesPage() {
                     <FormLabel>{t('devices.group')}</FormLabel>
                     <Select
                       value={field.value != null ? String(field.value) : ''}
-                      onValueChange={(val) =>
-                        field.onChange(val === '' ? undefined : Number(val))
-                      }
+                      onValueChange={(val) => field.onChange(val === '' ? undefined : Number(val))}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -472,11 +457,7 @@ export default function DevicesPage() {
                 )}
               />
               <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setDialogOpen(false)}
-                >
+                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                   {t('common.cancel')}
                 </Button>
                 <Button type="submit" disabled={isMutating}>
@@ -491,8 +472,12 @@ export default function DevicesPage() {
       {/* Single Delete Confirmation */}
       <ConfirmDialog
         open={deleteTarget !== null}
-        onOpenChange={(open) => { if (!open) setDeleteTarget(null) }}
-        onConfirm={() => { if (deleteTarget !== null) deleteMutation.mutate(deleteTarget) }}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null)
+        }}
+        onConfirm={() => {
+          if (deleteTarget !== null) deleteMutation.mutate(deleteTarget)
+        }}
         loading={deleteMutation.isPending}
       />
 

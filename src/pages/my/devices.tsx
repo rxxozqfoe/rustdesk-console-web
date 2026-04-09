@@ -1,11 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
-import {
-  useReactTable,
-  getCoreRowModel,
-  type ColumnDef,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, type ColumnDef } from '@tanstack/react-table'
 import { DataTable } from '@/components/data-table/data-table'
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar'
 import { DataTablePagination } from '@/components/data-table/data-table-pagination'

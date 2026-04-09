@@ -3,7 +3,10 @@ import type { PaginatedData } from '@/types/api'
 import type { ShareRecord, ShareRecordQuery } from '@/types/share-record'
 
 export function getShareRecords(params: ShareRecordQuery) {
-  return apiGet<PaginatedData<ShareRecord>>('/api/admin/share_record/list', params as Record<string, unknown>)
+  return apiGet<PaginatedData<ShareRecord>>(
+    '/api/admin/share_record/list',
+    params as Record<string, unknown>,
+  )
 }
 
 export function deleteShareRecord(id: number) {

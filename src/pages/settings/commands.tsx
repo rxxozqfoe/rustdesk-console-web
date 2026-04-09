@@ -198,7 +198,7 @@ export default function CommandsPage() {
             title={t('common.delete')}
             onClick={() => setDeleteTarget(row.original.id)}
           >
-            <Trash2 className="size-4 text-destructive" />
+            <Trash2 className="text-destructive size-4" />
           </Button>
         </div>
       ),
@@ -304,22 +304,15 @@ export default function CommandsPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>{t('settings.commands.target')}</FormLabel>
-                    <Select
-                      value={field.value}
-                      onValueChange={field.onChange}
-                    >
+                    <Select value={field.value} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="—" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="21115">
-                          {t('settings.commands.id_server')}
-                        </SelectItem>
-                        <SelectItem value="21117">
-                          {t('settings.commands.relay_server')}
-                        </SelectItem>
+                        <SelectItem value="21115">{t('settings.commands.id_server')}</SelectItem>
+                        <SelectItem value="21117">{t('settings.commands.relay_server')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -327,11 +320,7 @@ export default function CommandsPage() {
                 )}
               />
               <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setDialogOpen(false)}
-                >
+                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                   {t('common.cancel')}
                 </Button>
                 <Button type="submit" disabled={createMutation.isPending}>

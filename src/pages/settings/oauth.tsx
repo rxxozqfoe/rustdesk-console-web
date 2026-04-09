@@ -216,8 +216,7 @@ export default function OAuthPage() {
     {
       accessorKey: 'auto_register',
       header: t('settings.oauth.auto_register'),
-      cell: ({ row }) =>
-        row.original.auto_register ? t('common.yes') : t('common.no'),
+      cell: ({ row }) => (row.original.auto_register ? t('common.yes') : t('common.no')),
     },
     {
       accessorKey: 'created_at',
@@ -243,7 +242,7 @@ export default function OAuthPage() {
             title={t('common.delete')}
             onClick={() => handleDelete(row.original)}
           >
-            <Trash2 className="size-4 text-destructive" />
+            <Trash2 className="text-destructive size-4" />
           </Button>
         </div>
       ),
@@ -290,8 +289,7 @@ export default function OAuthPage() {
         <DialogContent className="sm:max-w-[480px]">
           <DialogHeader>
             <DialogTitle>
-              {editingOAuth ? t('common.edit') : t('common.add')}{' '}
-              {t('settings.oauth.provider')}
+              {editingOAuth ? t('common.edit') : t('common.add')} {t('settings.oauth.provider')}
             </DialogTitle>
           </DialogHeader>
           <Form {...form}>
@@ -392,14 +390,9 @@ export default function OAuthPage() {
                 name="auto_register"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center gap-3">
-                    <FormLabel className="mt-0">
-                      {t('settings.oauth.auto_register')}
-                    </FormLabel>
+                    <FormLabel className="mt-0">{t('settings.oauth.auto_register')}</FormLabel>
                     <FormControl>
-                      <Switch
-                        checked={field.value ?? false}
-                        onCheckedChange={field.onChange}
-                      />
+                      <Switch checked={field.value ?? false} onCheckedChange={field.onChange} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -412,14 +405,9 @@ export default function OAuthPage() {
                 name="pkce_enable"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center gap-3">
-                    <FormLabel className="mt-0">
-                      {t('settings.oauth.pkce_enable')}
-                    </FormLabel>
+                    <FormLabel className="mt-0">{t('settings.oauth.pkce_enable')}</FormLabel>
                     <FormControl>
-                      <Switch
-                        checked={field.value ?? false}
-                        onCheckedChange={field.onChange}
-                      />
+                      <Switch checked={field.value ?? false} onCheckedChange={field.onChange} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -434,10 +422,7 @@ export default function OAuthPage() {
                   <FormItem>
                     <FormLabel>{t('settings.oauth.pkce_method')}</FormLabel>
                     <FormControl>
-                      <Select
-                        value={field.value ?? ''}
-                        onValueChange={field.onChange}
-                      >
+                      <Select value={field.value ?? ''} onValueChange={field.onChange}>
                         <SelectTrigger>
                           <SelectValue placeholder="—" />
                         </SelectTrigger>
@@ -453,11 +438,7 @@ export default function OAuthPage() {
               />
 
               <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setDialogOpen(false)}
-                >
+                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                   {t('common.cancel')}
                 </Button>
                 <Button type="submit" disabled={isMutating}>

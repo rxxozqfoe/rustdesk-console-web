@@ -9,12 +9,20 @@ import { DataTablePagination } from '@/components/data-table/data-table-paginati
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { getShareRecords, deleteShareRecord, batchDeleteShareRecords } from '@/services/share-record.service'
+import {
+  getShareRecords,
+  deleteShareRecord,
+  batchDeleteShareRecords,
+} from '@/services/share-record.service'
 import type { ShareRecord } from '@/types/share-record'
 
 function formatDate(value: string | number): string {
   if (!value) return '—'
-  try { return new Date(value).toLocaleString() } catch { return String(value) }
+  try {
+    return new Date(value).toLocaleString()
+  } catch {
+    return String(value)
+  }
 }
 
 function formatTimestamp(ts: number): string {
@@ -147,12 +155,8 @@ export default function ShareRecordsPage() {
       id: 'actions',
       header: t('common.actions'),
       cell: ({ row }) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setDeleteTarget(row.original.id)}
-        >
-          <Trash2 className="size-4 text-destructive" />
+        <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(row.original.id)}>
+          <Trash2 className="text-destructive size-4" />
         </Button>
       ),
     },
@@ -171,11 +175,7 @@ export default function ShareRecordsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{t('settings.share_records.title')}</h1>
         {selectedIds.size > 0 && (
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => setBatchDeleteOpen(true)}
-          >
+          <Button variant="destructive" size="sm" onClick={() => setBatchDeleteOpen(true)}>
             <Trash2 className="size-4" />
             {t('common.batch_delete')} ({selectedIds.size})
           </Button>
@@ -198,8 +198,12 @@ export default function ShareRecordsPage() {
       {/* Single Delete Confirmation */}
       <ConfirmDialog
         open={deleteTarget !== null}
-        onOpenChange={(open) => { if (!open) setDeleteTarget(null) }}
-        onConfirm={() => { if (deleteTarget !== null) deleteMutation.mutate(deleteTarget) }}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null)
+        }}
+        onConfirm={() => {
+          if (deleteTarget !== null) deleteMutation.mutate(deleteTarget)
+        }}
         loading={deleteMutation.isPending}
       />
 

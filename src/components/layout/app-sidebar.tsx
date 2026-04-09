@@ -28,11 +28,7 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
 } from '@/components/ui/sidebar'
-import {
-  Collapsible,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from '@/components/ui/collapsible'
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible'
 import { useAuthStore } from '@/stores/auth'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 
@@ -91,7 +87,11 @@ const navItems: NavEntry[] = [
       { labelKey: 'sidebar.settings_oauth', icon: Settings, path: '/settings/oauth' },
       { labelKey: 'sidebar.settings_tokens', icon: Settings, path: '/settings/tokens' },
       { labelKey: 'sidebar.settings_login_logs', icon: Settings, path: '/settings/login-logs' },
-      { labelKey: 'sidebar.settings_share_records', icon: Settings, path: '/settings/share-records' },
+      {
+        labelKey: 'sidebar.settings_share_records',
+        icon: Settings,
+        path: '/settings/share-records',
+      },
       { labelKey: 'sidebar.settings_commands', icon: Settings, path: '/settings/commands' },
     ],
   },
@@ -110,15 +110,13 @@ export function AppSidebar() {
 
   const visibleNavItems = navItems.filter((entry) => !entry.adminOnly || isAdmin)
 
-  const userInitials = user?.username
-    ? user.username.slice(0, 2).toUpperCase()
-    : 'U'
+  const userInitials = user?.username ? user.username.slice(0, 2).toUpperCase() : 'U'
 
   return (
     <Sidebar>
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2 py-2">
-          <div className="flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground font-bold text-sm">
+          <div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-md text-sm font-bold">
             R
           </div>
           <span className="text-sm font-semibold">{t('app.title')}</span>
@@ -133,10 +131,7 @@ export function AppSidebar() {
                 const groupActive = isGroupActive(entry, pathname)
                 const Icon = entry.icon
                 return (
-                  <Collapsible
-                    key={entry.labelKey}
-                    defaultOpen={groupActive}
-                  >
+                  <Collapsible key={entry.labelKey} defaultOpen={groupActive}>
                     <SidebarMenuItem>
                       <CollapsibleTrigger
                         render={
@@ -189,12 +184,10 @@ export function AppSidebar() {
             <AvatarFallback>{userInitials}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col text-sm leading-tight group-data-[collapsible=icon]:hidden">
-            <span className="font-medium truncate">
+            <span className="truncate font-medium">
               {user?.nickname || user?.username || 'User'}
             </span>
-            <span className="text-xs text-muted-foreground truncate">
-              {user?.email || ''}
-            </span>
+            <span className="text-muted-foreground truncate text-xs">{user?.email || ''}</span>
           </div>
         </div>
       </SidebarFooter>

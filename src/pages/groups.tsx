@@ -1,11 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import {
-  useReactTable,
-  getCoreRowModel,
-  type ColumnDef,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, type ColumnDef } from '@tanstack/react-table'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -39,12 +35,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
-import {
-  getGroups,
-  createGroup,
-  updateGroup,
-  deleteGroup,
-} from '@/services/group.service'
+import { getGroups, createGroup, updateGroup, deleteGroup } from '@/services/group.service'
 import type { Group, GroupForm } from '@/types/group'
 
 function formatDate(value: string | number): string {
@@ -58,7 +49,7 @@ function formatDate(value: string | number): string {
 
 const groupSchema = z.object({
   name: z.string().min(1),
-  type: z.coerce.number().optional(),
+  type: z.number().optional(),
 })
 
 type GroupSchemaValues = z.infer<typeof groupSchema>
@@ -173,19 +164,11 @@ export default function GroupsPage() {
       header: t('common.actions'),
       cell: ({ row }) => (
         <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => openEditDialog(row.original)}
-          >
+          <Button variant="ghost" size="sm" onClick={() => openEditDialog(row.original)}>
             <Pencil className="size-4" />
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setDeleteTarget(row.original.id)}
-          >
-            <Trash2 className="size-4 text-destructive" />
+          <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(row.original.id)}>
+            <Trash2 className="text-destructive size-4" />
           </Button>
         </div>
       ),
@@ -229,9 +212,7 @@ export default function GroupsPage() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>
-              {editingGroup ? t('common.edit') : t('common.add')}
-            </DialogTitle>
+            <DialogTitle>{editingGroup ? t('common.edit') : t('common.add')}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
@@ -256,9 +237,7 @@ export default function GroupsPage() {
                     <FormLabel>{t('groups.type')}</FormLabel>
                     <Select
                       value={field.value != null ? String(field.value) : ''}
-                      onValueChange={(val) =>
-                        field.onChange(val === '' ? undefined : Number(val))
-                      }
+                      onValueChange={(val) => field.onChange(val === '' ? undefined : Number(val))}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -275,11 +254,7 @@ export default function GroupsPage() {
                 )}
               />
               <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setDialogOpen(false)}
-                >
+                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                   {t('common.cancel')}
                 </Button>
                 <Button type="submit" disabled={isMutating}>

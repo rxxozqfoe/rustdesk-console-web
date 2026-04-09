@@ -85,8 +85,8 @@ export interface MyAddressBookCollectionRule {
   id: number
   user_id: number
   collection_id: number
-  rule: number  // 1=Read, 2=ReadWrite, 3=FullControl
-  type: number  // 1=User, 2=Group
+  rule: number // 1=Read, 2=ReadWrite, 3=FullControl
+  type: number // 1=User, 2=Group
   to_id: number
   created_at: string
   updated_at: string

@@ -1,8 +1,4 @@
-import {
-  type ColumnDef,
-  type Table as TanstackTable,
-  flexRender,
-} from '@tanstack/react-table'
+import { type ColumnDef, type Table as TanstackTable, flexRender } from '@tanstack/react-table'
 import {
   Table,
   TableBody,

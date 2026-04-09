@@ -1,11 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import {
-  useReactTable,
-  getCoreRowModel,
-  type ColumnDef,
-} from '@tanstack/react-table'
+import { useReactTable, getCoreRowModel, type ColumnDef } from '@tanstack/react-table'
 import { useForm } from 'react-hook-form'
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema'
 import { z } from 'zod'
@@ -344,7 +340,7 @@ export default function UsersPage() {
             title={t('common.delete')}
             onClick={() => handleDelete(row.original)}
           >
-            <Trash2 className="size-4 text-destructive" />
+            <Trash2 className="text-destructive size-4" />
           </Button>
         </div>
       ),
@@ -359,8 +355,7 @@ export default function UsersPage() {
     rowCount: total,
   })
 
-  const isMutating =
-    createMutation.isPending || updateMutation.isPending
+  const isMutating = createMutation.isPending || updateMutation.isPending
 
   // ─── Render ────────────────────────────────────────────────────────────────
 
@@ -405,7 +400,8 @@ export default function UsersPage() {
         <DialogContent className="sm:max-w-[480px]">
           <DialogHeader>
             <DialogTitle>
-              {editingUser ? t('common.edit') : t('common.add')} {t('users.title').replace(/s$/, '')}
+              {editingUser ? t('common.edit') : t('common.add')}{' '}
+              {t('users.title').replace(/s$/, '')}
             </DialogTitle>
           </DialogHeader>
           <Form {...userForm}>
@@ -509,10 +505,7 @@ export default function UsersPage() {
                   <FormItem className="flex flex-row items-center gap-3">
                     <FormLabel className="mt-0">{t('users.admin')}</FormLabel>
                     <FormControl>
-                      <Switch
-                        checked={field.value ?? false}
-                        onCheckedChange={field.onChange}
-                      />
+                      <Switch checked={field.value ?? false} onCheckedChange={field.onChange} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -561,11 +554,7 @@ export default function UsersPage() {
               />
 
               <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setDialogOpen(false)}
-                >
+                <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
                   {t('common.cancel')}
                 </Button>
                 <Button type="submit" disabled={isMutating}>
@@ -602,11 +591,7 @@ export default function UsersPage() {
                 )}
               />
               <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setPwdDialogOpen(false)}
-                >
+                <Button type="button" variant="outline" onClick={() => setPwdDialogOpen(false)}>
                   {t('common.cancel')}
                 </Button>
                 <Button type="submit" disabled={changePwdMutation.isPending}>

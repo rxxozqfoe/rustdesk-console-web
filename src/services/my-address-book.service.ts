@@ -1,15 +1,23 @@
 import { apiGet, apiPost } from '@/lib/api'
 import type { PaginatedData } from '@/types/api'
 import type {
-  MyAddressBook, MyAddressBookForm, MyAddressBookQuery,
-  MyTag, MyTagForm,
-  MyAddressBookCollection, MyAddressBookCollectionForm,
-  MyAddressBookCollectionRule, MyAddressBookCollectionRuleForm,
+  MyAddressBook,
+  MyAddressBookForm,
+  MyAddressBookQuery,
+  MyTag,
+  MyTagForm,
+  MyAddressBookCollection,
+  MyAddressBookCollectionForm,
+  MyAddressBookCollectionRule,
+  MyAddressBookCollectionRuleForm,
 } from '@/types/my-address-book'
 
 // Address Book Entries
 export function getMyAddressBooks(params: MyAddressBookQuery) {
-  return apiGet<PaginatedData<MyAddressBook>>('/api/admin/my/address_book/list', params as Record<string, unknown>)
+  return apiGet<PaginatedData<MyAddressBook>>(
+    '/api/admin/my/address_book/list',
+    params as Record<string, unknown>,
+  )
 }
 
 export function createMyAddressBook(data: MyAddressBookForm) {
@@ -26,7 +34,11 @@ export function deleteMyAddressBook(rowId: number) {
 
 // Tags
 export function getMyTags(params?: { page?: number; page_size?: number; collection_id?: number }) {
-  return apiGet<PaginatedData<MyTag>>('/api/admin/my/tag/list', { page: 1, page_size: 1000, ...params } as Record<string, unknown>)
+  return apiGet<PaginatedData<MyTag>>('/api/admin/my/tag/list', {
+    page: 1,
+    page_size: 1000,
+    ...params,
+  } as Record<string, unknown>)
 }
 
 export function createMyTag(data: MyTagForm) {
@@ -43,7 +55,10 @@ export function deleteMyTag(id: number) {
 
 // Collections
 export function getMyCollections(params?: { page?: number; page_size?: number }) {
-  return apiGet<PaginatedData<MyAddressBookCollection>>('/api/admin/my/address_book_collection/list', { page: 1, page_size: 1000, ...params } as Record<string, unknown>)
+  return apiGet<PaginatedData<MyAddressBookCollection>>(
+    '/api/admin/my/address_book_collection/list',
+    { page: 1, page_size: 1000, ...params } as Record<string, unknown>,
+  )
 }
 
 export function createMyCollection(data: MyAddressBookCollectionForm) {
@@ -59,8 +74,15 @@ export function deleteMyCollection(id: number) {
 }
 
 // Collection Rules
-export function getMyCollectionRules(params?: { page?: number; page_size?: number; collection_id?: number }) {
-  return apiGet<PaginatedData<MyAddressBookCollectionRule>>('/api/admin/my/address_book_collection_rule/list', { page: 1, page_size: 1000, ...params } as Record<string, unknown>)
+export function getMyCollectionRules(params?: {
+  page?: number
+  page_size?: number
+  collection_id?: number
+}) {
+  return apiGet<PaginatedData<MyAddressBookCollectionRule>>(
+    '/api/admin/my/address_book_collection_rule/list',
+    { page: 1, page_size: 1000, ...params } as Record<string, unknown>,
+  )
 }
 
 export function createMyCollectionRule(data: MyAddressBookCollectionRuleForm) {
