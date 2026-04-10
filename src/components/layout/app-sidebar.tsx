@@ -9,6 +9,7 @@ import {
   BookOpen,
   Shield,
   Package,
+  Hammer,
   Settings,
   ChevronRight,
   Share2,
@@ -79,6 +80,7 @@ const navItems: NavEntry[] = [
   { labelKey: 'sidebar.address_books', icon: BookOpen, path: '/address-books', adminOnly: true },
   { labelKey: 'sidebar.strategies', icon: Shield, path: '/strategies', adminOnly: true },
   { labelKey: 'sidebar.custom_clients', icon: Package, path: '/custom-clients', adminOnly: true },
+  { labelKey: 'sidebar.build_jobs', icon: Hammer, path: '/build-jobs', adminOnly: true },
   {
     labelKey: 'sidebar.settings',
     icon: Settings,

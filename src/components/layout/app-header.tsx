@@ -34,6 +34,7 @@ const routeLabels: Record<string, string> = {
   'address-books': 'sidebar.address_books',
   strategies: 'sidebar.strategies',
   'custom-clients': 'sidebar.custom_clients',
+  'build-jobs': 'sidebar.build_jobs',
   settings: 'sidebar.settings',
   oauth: 'sidebar.settings_oauth',
   tokens: 'sidebar.settings_tokens',
