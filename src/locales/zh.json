@@ -132,7 +132,9 @@
       "ip": "IP",
       "session_id": "Session ID",
       "type": "類型",
-      "close_time": "關閉時間"
+      "close_time": "關閉時間",
+      "disconnect": "斷線",
+      "confirm_disconnect": "確定要斷開此連線嗎？"
     },
     "file": {
       "title": "檔案傳輸日誌",

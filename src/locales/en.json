@@ -132,7 +132,9 @@
       "ip": "IP",
       "session_id": "Session ID",
       "type": "Type",
-      "close_time": "Close Time"
+      "close_time": "Close Time",
+      "disconnect": "Disconnect",
+      "confirm_disconnect": "Are you sure you want to disconnect this connection?"
     },
     "file": {
       "title": "File Transfer Logs",

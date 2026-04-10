@@ -18,6 +18,10 @@ export function batchDeleteAuditConns(ids: number[]) {
   return apiPost('/api/admin/audit_conn/batchDelete', { ids })
 }
 
+export function disconnectAuditConn(peerId: string, connIds: number[]) {
+  return apiPost('/api/admin/audit_conn/disconnect', { peer_id: peerId, conn_ids: connIds })
+}
+
 // File Transfer Logs
 export function getAuditFiles(params: AuditQuery) {
   return apiGet<PaginatedData<AuditFile>>(
