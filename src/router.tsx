@@ -16,6 +16,7 @@ const AddressBooksPage = lazy(() => import('@/pages/address-books'))
 const StrategiesPage = lazy(() => import('@/pages/strategies'))
 const CustomClientsPage = lazy(() => import('@/pages/custom-clients'))
 const PreBuildsPage = lazy(() => import('@/pages/pre-builds'))
+const WorkersPage = lazy(() => import('@/pages/workers'))
 const OAuthPage = lazy(() => import('@/pages/settings/oauth'))
 const TokensPage = lazy(() => import('@/pages/settings/tokens'))
 const LoginLogsPage = lazy(() => import('@/pages/settings/login-logs'))
@@ -143,6 +144,14 @@ export function AppRouter() {
             element={
               <SuspenseWrapper>
                 <PreBuildsPage />
+              </SuspenseWrapper>
+            }
+          />
+          <Route
+            path="custom-clients/workers"
+            element={
+              <SuspenseWrapper>
+                <WorkersPage />
               </SuspenseWrapper>
             }
           />

@@ -17,6 +17,7 @@
     "custom_clients": "Custom Clients",
     "custom_clients_config": "Client Generator",
     "custom_clients_pre_builds": "Pre-build Jobs",
+    "custom_clients_workers": "Build Workers",
     "settings": "Settings",
     "settings_oauth": "OAuth",
     "settings_tokens": "User Tokens",
@@ -427,6 +428,17 @@
     "build_log": "Build Log",
     "live": "LIVE",
     "no_log": "No log output yet..."
+  },
+  "workers": {
+    "title": "Build Workers",
+    "name": "Name",
+    "status": "Status",
+    "platforms": "Platforms",
+    "versions": "Versions",
+    "versions_available": "available",
+    "last_seen": "Last Seen",
+    "online": "Online",
+    "offline": "Offline"
   },
   "settings": {
     "oauth": {

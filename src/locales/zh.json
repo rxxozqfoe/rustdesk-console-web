@@ -17,6 +17,7 @@
     "custom_clients": "自訂客戶端",
     "custom_clients_config": "客戶端生成",
     "custom_clients_pre_builds": "預編譯任務",
+    "custom_clients_workers": "建置工作器",
     "settings": "設定",
     "settings_oauth": "OAuth",
     "settings_tokens": "使用者 Token",
@@ -427,6 +428,17 @@
     "build_log": "編譯 Log",
     "live": "即時",
     "no_log": "尚無 log 輸出..."
+  },
+  "workers": {
+    "title": "建置工作器",
+    "name": "名稱",
+    "status": "狀態",
+    "platforms": "平台",
+    "versions": "版本",
+    "versions_available": "個可用",
+    "last_seen": "最後心跳",
+    "online": "線上",
+    "offline": "離線"
   },
   "settings": {
     "oauth": {

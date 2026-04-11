@@ -10,6 +10,7 @@ import {
   Shield,
   Package,
   Hammer,
+  Server,
   Settings,
   ChevronRight,
   Share2,
@@ -86,6 +87,7 @@ const navItems: NavEntry[] = [
     children: [
       { labelKey: 'sidebar.custom_clients_config', icon: Package, path: '/custom-clients' },
       { labelKey: 'sidebar.custom_clients_pre_builds', icon: Hammer, path: '/custom-clients/pre-builds' },
+      { labelKey: 'sidebar.custom_clients_workers', icon: Server, path: '/custom-clients/workers' },
     ],
   },
   {
