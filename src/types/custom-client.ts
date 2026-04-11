@@ -8,13 +8,19 @@ export interface CustomClient {
   relay_server: string
   default_settings: Record<string, string>
   override_settings: Record<string, string>
-  enabled: boolean
+  platform: string
+  arch: string
+  version: string
+  format: string
+  status: 'bundling' | 'completed' | 'failed'
+  file_path: string
+  file_size: number
+  error: string
   created_at: string
   updated_at: string
 }
 
 export interface CustomClientForm {
-  id?: number
   name: string
   app_name: string
   server_host?: string
@@ -23,7 +29,10 @@ export interface CustomClientForm {
   relay_server?: string
   default_settings?: Record<string, string>
   override_settings?: Record<string, string>
-  enabled?: boolean
+  platform: string
+  arch: string
+  version: string
+  format: string
 }
 
 export interface CustomClientQuery {
@@ -35,11 +44,8 @@ export interface BuildArtifact {
   id: number
   platform: string
   arch: string
-  format: string
   version: string
-  file_path: string
-  file_size: number
-  sha256: string
+  dir_path: string
   source: string
   created_at: string
   updated_at: string

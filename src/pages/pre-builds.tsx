@@ -19,14 +19,14 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import {
-  getBuildVersions,
-  triggerBuild,
-  getBuildJobs,
-  getBuildJobLog,
-  cancelBuildJob,
-  deleteBuildJob,
-} from '@/services/build-job.service'
-import type { BuildJob } from '@/types/build-job'
+  getPreBuildVersions,
+  triggerPreBuild,
+  getPreBuilds,
+  getPreBuildLog,
+  cancelPreBuild,
+  deletePreBuild,
+} from '@/services/pre-build.service'
+import type { PreBuild } from '@/types/pre-build'
 
 function StatusBadge({ status }: { status: string }) {
   const variants: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
@@ -81,7 +81,7 @@ function LogViewerModal({
 
     const fetchLog = async () => {
       try {
-        const result = await getBuildJobLog(jobId, offset)
+        const result = await getPreBuildLog(jobId, offset)
         if (result.log) {
           setLog((prev) => prev + result.log)
           setOffset(result.offset)
@@ -108,22 +108,28 @@ function LogViewerModal({
   }, [log])
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <Card className="max-h-[85vh] w-[800px] overflow-auto">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      onClick={onClose}
+    >
+      <Card
+        className="max-h-[85vh] w-[800px] flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
         <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-sm">{t('build_jobs.build_log')}</CardTitle>
+          <CardTitle className="text-sm">{t('pre_builds.build_log')}</CardTitle>
           {isActive && (
             <Badge variant="outline" className="animate-pulse border-blue-500 text-blue-600">
-              {t('build_jobs.live')}
+              {t('pre_builds.live')}
             </Badge>
           )}
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex-1 overflow-hidden flex flex-col">
           <pre
             ref={preRef}
             className="bg-muted max-h-[60vh] overflow-auto rounded p-4 font-mono text-xs whitespace-pre-wrap"
           >
-            {log || t('build_jobs.no_log')}
+            {log || t('pre_builds.no_log')}
           </pre>
           <div className="mt-4 flex justify-end">
             <Button size="sm" onClick={onClose}>
@@ -138,32 +144,31 @@ function LogViewerModal({
 
 // ─── Main Page ────────────────────────────────────────────────────────────
 
-export default function BuildJobsPage() {
+export default function PreBuildsPage() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
 
   // Trigger form state
   const [selectedVersion, setSelectedVersion] = useState('')
-  const [selectedPlatform] = useState('linux')
-  const [selectedArch] = useState('x86_64')
-  const [selectedFormat] = useState('deb')
+  const [selectedPlatform, setSelectedPlatform] = useState('linux')
+  const [selectedArch, setSelectedArch] = useState('x86_64')
 
   // List state
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(20)
   const [deleteTarget, setDeleteTarget] = useState<number | null>(null)
-  const [logViewJob, setLogViewJob] = useState<BuildJob | null>(null)
+  const [logViewJobId, setLogViewJobId] = useState<number | null>(null)
 
   // ─── Queries ──────────────────────────────────────────────────────────
 
   const { data: versions } = useQuery({
-    queryKey: ['build-versions'],
-    queryFn: getBuildVersions,
+    queryKey: ['pre-build-versions'],
+    queryFn: getPreBuildVersions,
   })
 
   const { data: jobsData, isLoading } = useQuery({
-    queryKey: ['build-jobs', page, pageSize],
-    queryFn: () => getBuildJobs({ page, page_size: pageSize }),
+    queryKey: ['pre-builds', page, pageSize],
+    queryFn: () => getPreBuilds({ page, page_size: pageSize }),
     refetchInterval: (query) => {
       const jobs = query.state.data?.list ?? []
       const hasActive = jobs.some(
@@ -183,33 +188,32 @@ export default function BuildJobsPage() {
 
   const triggerMutation = useMutation({
     mutationFn: () =>
-      triggerBuild({
+      triggerPreBuild({
         version: selectedVersion,
         platform: selectedPlatform,
         arch: selectedArch,
-        format: selectedFormat,
       }),
     onSuccess: () => {
-      toast.success(t('build_jobs.triggered'))
-      queryClient.invalidateQueries({ queryKey: ['build-jobs'] })
+      toast.success(t('pre_builds.triggered'))
+      queryClient.invalidateQueries({ queryKey: ['pre-builds'] })
     },
     onError: (err: Error) => toast.error(err.message),
   })
 
   const cancelMutation = useMutation({
-    mutationFn: (id: number) => cancelBuildJob(id),
+    mutationFn: (id: number) => cancelPreBuild(id),
     onSuccess: () => {
       toast.success(t('common.success'))
-      queryClient.invalidateQueries({ queryKey: ['build-jobs'] })
+      queryClient.invalidateQueries({ queryKey: ['pre-builds'] })
     },
     onError: (err: Error) => toast.error(err.message),
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (id: number) => deleteBuildJob(id),
+    mutationFn: (id: number) => deletePreBuild(id),
     onSuccess: () => {
       toast.success(t('common.success'))
-      queryClient.invalidateQueries({ queryKey: ['build-jobs'] })
+      queryClient.invalidateQueries({ queryKey: ['pre-builds'] })
       setDeleteTarget(null)
     },
     onError: (err: Error) => toast.error(err.message),
@@ -217,29 +221,29 @@ export default function BuildJobsPage() {
 
   // ─── Columns ──────────────────────────────────────────────────────────
 
-  const columns: ColumnDef<BuildJob>[] = [
+  const columns: ColumnDef<PreBuild>[] = [
     {
       accessorKey: 'version',
-      header: t('build_jobs.version'),
+      header: t('pre_builds.version'),
       cell: ({ row }) => <span className="font-mono">{row.original.version}</span>,
     },
     {
       id: 'target',
-      header: t('build_jobs.target'),
+      header: t('pre_builds.target'),
       cell: ({ row }) => (
         <span className="text-muted-foreground text-xs">
-          {row.original.platform}/{row.original.arch} ({row.original.format})
+          {row.original.platform}/{row.original.arch}
         </span>
       ),
     },
     {
       id: 'status',
-      header: t('build_jobs.status'),
+      header: t('pre_builds.status'),
       cell: ({ row }) => <StatusBadge status={row.original.status} />,
     },
     {
       id: 'started',
-      header: t('build_jobs.started'),
+      header: t('pre_builds.started'),
       cell: ({ row }) =>
         row.original.started_at
           ? new Date(row.original.started_at).toLocaleString()
@@ -247,13 +251,13 @@ export default function BuildJobsPage() {
     },
     {
       id: 'duration',
-      header: t('build_jobs.duration'),
+      header: t('pre_builds.duration'),
       cell: ({ row }) =>
         formatDuration(row.original.started_at, row.original.completed_at),
     },
     {
       id: 'error',
-      header: t('build_jobs.error'),
+      header: t('pre_builds.error'),
       cell: ({ row }) =>
         row.original.error ? (
           <span className="text-destructive text-xs" title={row.original.error}>
@@ -273,8 +277,8 @@ export default function BuildJobsPage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setLogViewJob(row.original)}
-            title={t('build_jobs.view_log')}
+            onClick={() => setLogViewJobId(row.original.id)}
+            title={t('pre_builds.view_log')}
           >
             <FileText className="size-4" />
           </Button>
@@ -283,20 +287,18 @@ export default function BuildJobsPage() {
               variant="ghost"
               size="sm"
               onClick={() => cancelMutation.mutate(row.original.id)}
-              title={t('build_jobs.cancel')}
+              title={t('pre_builds.cancel')}
             >
               <XCircle className="text-destructive size-4" />
             </Button>
           )}
-          {(row.original.status === 'completed' || row.original.status === 'failed') && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setDeleteTarget(row.original.id)}
-            >
-              <Trash2 className="text-destructive size-4" />
-            </Button>
-          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setDeleteTarget(row.original.id)}
+          >
+            <Trash2 className="text-destructive size-4" />
+          </Button>
         </div>
       ),
     },
@@ -314,19 +316,19 @@ export default function BuildJobsPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">{t('build_jobs.title')}</h1>
+      <h1 className="text-2xl font-bold">{t('pre_builds.title')}</h1>
 
       {/* Trigger Build Card */}
       <Card>
         <CardHeader className="pt-4 pb-2">
-          <CardTitle className="text-sm">{t('build_jobs.trigger_build')}</CardTitle>
+          <CardTitle className="text-sm">{t('pre_builds.trigger_build')}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-wrap items-end gap-6">
           <div className="flex flex-col gap-1">
-            <Label className="text-muted-foreground text-xs">{t('build_jobs.version')}</Label>
+            <Label className="text-muted-foreground text-xs">{t('pre_builds.version')}</Label>
             <Select value={selectedVersion} onValueChange={setSelectedVersion}>
               <SelectTrigger className="h-9 w-40">
-                <SelectValue placeholder={t('build_jobs.select_version')} />
+                <SelectValue placeholder={t('pre_builds.select_version')} />
               </SelectTrigger>
               <SelectContent>
                 {(versions || []).map((v) => (
@@ -339,8 +341,8 @@ export default function BuildJobsPage() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <Label className="text-muted-foreground text-xs">{t('build_jobs.platform')}</Label>
-            <Select value={selectedPlatform} disabled>
+            <Label className="text-muted-foreground text-xs">{t('pre_builds.platform')}</Label>
+            <Select value={selectedPlatform} onValueChange={setSelectedPlatform}>
               <SelectTrigger className="h-9 w-32">
                 <SelectValue />
               </SelectTrigger>
@@ -351,25 +353,13 @@ export default function BuildJobsPage() {
           </div>
 
           <div className="flex flex-col gap-1">
-            <Label className="text-muted-foreground text-xs">{t('build_jobs.arch')}</Label>
-            <Select value={selectedArch} disabled>
+            <Label className="text-muted-foreground text-xs">{t('pre_builds.arch')}</Label>
+            <Select value={selectedArch} onValueChange={setSelectedArch}>
               <SelectTrigger className="h-9 w-32">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="x86_64">x86_64</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <Label className="text-muted-foreground text-xs">{t('build_jobs.format')}</Label>
-            <Select value={selectedFormat} disabled>
-              <SelectTrigger className="h-9 w-24">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="deb">DEB</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -380,11 +370,11 @@ export default function BuildJobsPage() {
             disabled={!selectedVersion || hasActiveJob || triggerMutation.isPending}
           >
             <Play className="mr-1 size-4" />
-            {t('build_jobs.start_build')}
+            {t('pre_builds.start_build')}
           </Button>
 
           {hasActiveJob && (
-            <span className="text-muted-foreground text-xs">{t('build_jobs.build_in_progress')}</span>
+            <span className="text-muted-foreground text-xs">{t('pre_builds.build_in_progress')}</span>
           )}
         </CardContent>
       </Card>
@@ -404,11 +394,11 @@ export default function BuildJobsPage() {
       />
 
       {/* Log Viewer */}
-      {logViewJob && (
+      {logViewJobId && (
         <LogViewerModal
-          jobId={logViewJob.id}
-          status={logViewJob.status}
-          onClose={() => setLogViewJob(null)}
+          jobId={logViewJobId}
+          status={jobs.find((j) => j.id === logViewJobId)?.status ?? 'failed'}
+          onClose={() => setLogViewJobId(null)}
         />
       )}
 

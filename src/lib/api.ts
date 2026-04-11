@@ -1,4 +1,6 @@
 import axios from 'axios'
+import { toast } from 'sonner'
+import { useAuthStore } from '@/stores/auth'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '',
@@ -27,13 +29,9 @@ api.interceptors.response.use(
       return data
     }
     if (code === 403) {
-      // Only clear auth and redirect for authentication failures (token missing/invalid).
-      // Permission errors (e.g. non-admin) should surface as regular errors.
-      const isAuthFailure = !message || message === 'NeedLogin' || message.includes('NeedLogin')
-      if (isAuthFailure) {
-        localStorage.removeItem('auth-storage')
-        window.location.href = '/login'
-      }
+      toast.error(message || 'Please login first')
+      useAuthStore.getState().clearAuth()
+      window.location.href = '/login'
       return Promise.reject(new Error(message || 'Unauthorized'))
     }
     return Promise.reject(new Error(message || 'Request failed'))

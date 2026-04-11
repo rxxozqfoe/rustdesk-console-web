@@ -7,7 +7,7 @@ import type {
   BuildArtifact,
 } from '@/types/custom-client'
 
-// ─── Custom Client Config CRUD ─────────────────────────────────────────────
+// ─── Custom Client CRUD ────────────────────────────────────────────────────
 
 export function getCustomClients(params?: CustomClientQuery) {
   return apiGet<PaginatedData<CustomClient>>(
@@ -24,10 +24,6 @@ export function createCustomClient(data: CustomClientForm) {
   return apiPost<CustomClient>('/api/admin/custom-client/create', data)
 }
 
-export function updateCustomClient(data: CustomClientForm) {
-  return apiPost('/api/admin/custom-client/update', data)
-}
-
 export function deleteCustomClient(id: number) {
   return apiPost('/api/admin/custom-client/delete', { id })
 }
@@ -36,7 +32,7 @@ export function previewCustomTxt(id: number) {
   return apiGet<{ custom_txt: string }>(`/api/admin/custom-client/preview/${id}`)
 }
 
-// ─── Build Artifact CRUD ───────────────────────────────────────────────────
+// ─── Build Artifact ────────────────────────────────────────────────────────
 
 export function getBuildArtifacts(params?: { page?: number; page_size?: number }) {
   return apiGet<PaginatedData<BuildArtifact>>(
@@ -45,15 +41,18 @@ export function getBuildArtifacts(params?: { page?: number; page_size?: number }
   )
 }
 
-export function deleteBuildArtifact(id: number) {
-  return apiPost('/api/admin/build-artifact/delete', { id })
-}
+// ─── Download ──────────────────────────────────────────────────────────────
 
-// Upload is handled via FormData directly in the component
-
-// ─── Download URL helper ───────────────────────────────────────────────────
-
-export function getDownloadUrl(configId: number, platform: string, arch: string, format: string) {
+export function getDownloadUrl(id: number) {
   const base = import.meta.env.VITE_API_BASE_URL || ''
-  return `${base}/api/admin/custom-client/download/${configId}?platform=${platform}&arch=${arch}&format=${format}`
+  // Need to include auth token for the download
+  const raw = localStorage.getItem('auth-storage')
+  let token = ''
+  if (raw) {
+    try {
+      const { state } = JSON.parse(raw)
+      token = state?.token || ''
+    } catch { /* ignore */ }
+  }
+  return `${base}/api/admin/custom-client/download/${id}${token ? `?api-token=${token}` : ''}`
 }

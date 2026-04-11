@@ -1,4 +1,4 @@
-export interface BuildJob {
+export interface PreBuild {
   id: number
   version: string
   platform: string
@@ -14,9 +14,8 @@ export interface BuildJob {
   updated_at: string
 }
 
-export interface BuildJobTriggerForm {
+export interface PreBuildTriggerForm {
   version: string
   platform: string
   arch: string
-  format: string
 }
