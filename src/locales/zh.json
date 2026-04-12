@@ -385,6 +385,7 @@
     "edit": "編輯自訂客戶端",
     "basic_info": "基本資訊",
     "server_settings": "伺服器設定",
+    "custom_server": "自訂伺服器設定",
     "server_host": "ID 伺服器 (hbbs)",
     "server_key": "金鑰",
     "api_server": "API 伺服器",

@@ -27,6 +27,7 @@ import {
   previewCustomTxt,
   getBuildArtifacts,
   getDownloadUrl,
+  getServerConfig,
 } from '@/services/custom-client.service'
 import type { CustomClient, CustomClientForm, BuildArtifact } from '@/types/custom-client'
 import {
@@ -157,7 +158,7 @@ export default function CustomClientsPage() {
   // Edit/Create state
   const [editing, setEditing] = useState(false)
   const [formName, setFormName] = useState('')
-  const [formAppName, setFormAppName] = useState('')
+  const [useCustomServer, setUseCustomServer] = useState(false)
   const [formServerHost, setFormServerHost] = useState('')
   const [formServerKey, setFormServerKey] = useState('')
   const [formApiServer, setFormApiServer] = useState('')
@@ -181,6 +182,11 @@ export default function CustomClientsPage() {
 
   const clients = clientsData?.list ?? []
   const total = clientsData?.total ?? 0
+
+  const { data: serverConfig } = useQuery({
+    queryKey: ['server-config'],
+    queryFn: getServerConfig,
+  })
 
   const { data: artifactsData } = useQuery({
     queryKey: ['build-artifacts'],
@@ -224,13 +230,13 @@ export default function CustomClientsPage() {
 
   function openCreate() {
     setFormName('')
-    setFormAppName('')
-    setFormServerHost('')
-    setFormServerKey('')
-    setFormApiServer('')
-    setFormRelayServer('')
+    setUseCustomServer(false)
+    setFormServerHost(serverConfig?.id_server || '')
+    setFormServerKey(serverConfig?.key || '')
+    setFormApiServer(serverConfig?.api_server || '')
+    setFormRelayServer(serverConfig?.relay_server || '')
     setFormDefaultSettings({ ...DEFAULT_CONFIG })
-    setFormOverrideSettings({})
+    setFormOverrideSettings({ 'access-mode': 'custom' })
     const defaultPA = platformArchOptions[0] || ''
     setFormPlatformArch(defaultPA)
     // Pre-select first version and format for the default platform
@@ -243,10 +249,9 @@ export default function CustomClientsPage() {
   }
 
   function handleSave() {
-    if (!formName.trim() || !formAppName.trim() || !formPlatform || !formArch || !formVersion || !formFormat) return
+    if (!formName.trim() || !formPlatform || !formArch || !formVersion || !formFormat) return
     createMutation.mutate({
       name: formName,
-      app_name: formAppName,
       server_host: formServerHost,
       server_key: formServerKey,
       api_server: formApiServer,
@@ -275,11 +280,6 @@ export default function CustomClientsPage() {
     {
       accessorKey: 'name',
       header: t('custom_clients.name'),
-    },
-    {
-      accessorKey: 'app_name',
-      header: t('custom_clients.app_name'),
-      cell: ({ row }) => <span className="font-mono text-sm">{row.original.app_name}</span>,
     },
     {
       id: 'target',
@@ -318,14 +318,13 @@ export default function CustomClientsPage() {
       cell: ({ row }) => (
         <div className="flex items-center gap-1">
           {row.original.status === 'completed' && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => window.open(getDownloadUrl(row.original.id), '_blank')}
+            <a
+              href={getDownloadUrl(row.original)}
+              className="inline-flex items-center justify-center rounded-md p-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
               title={t('custom_clients.download')}
             >
               <Download className="size-4" />
-            </Button>
+            </a>
           )}
           <Button variant="ghost" size="sm" onClick={() => handlePreview(row.original.id)} title={t('custom_clients.preview')}>
             <Eye className="size-4" />
@@ -351,7 +350,7 @@ export default function CustomClientsPage() {
   // ═══════════════════════════════════════════════════════════════════════
 
   if (editing) {
-    const canSave = formName.trim() && formAppName.trim() && formPlatform && formArch && formVersion && formFormat
+    const canSave = formName.trim() && formPlatform && formArch && formVersion && formFormat
 
     return (
       <div className="space-y-4">
@@ -371,31 +370,50 @@ export default function CustomClientsPage() {
               <Input className="h-9 w-64" value={formName} onChange={(e) => setFormName(e.target.value)} placeholder={t('custom_clients.name_placeholder')} />
             </div>
             <div className="flex flex-col gap-1">
-              <Label className="text-muted-foreground text-xs">{t('custom_clients.app_name')}</Label>
-              <Input className="h-9 w-64" value={formAppName} onChange={(e) => setFormAppName(e.target.value)} placeholder="MyCompany Remote" />
             </div>
           </CardContent>
         </Card>
 
         {/* Server */}
         <Card>
-          <CardHeader className="pt-4 pb-2"><CardTitle className="text-sm">{t('custom_clients.server_settings')}</CardTitle></CardHeader>
+          <CardHeader className="pt-4 pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm">{t('custom_clients.server_settings')}</CardTitle>
+              <label className="flex items-center gap-2 text-xs cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={useCustomServer}
+                  onChange={(e) => {
+                    setUseCustomServer(e.target.checked)
+                    if (!e.target.checked) {
+                      setFormServerHost(serverConfig?.id_server || '')
+                      setFormServerKey(serverConfig?.key || '')
+                      setFormApiServer(serverConfig?.api_server || '')
+                      setFormRelayServer(serverConfig?.relay_server || '')
+                    }
+                  }}
+                  className="rounded"
+                />
+                <span className="text-muted-foreground">{t('custom_clients.custom_server')}</span>
+              </label>
+            </div>
+          </CardHeader>
           <CardContent className="flex flex-wrap gap-6">
             <div className="flex flex-col gap-1">
               <Label className="text-muted-foreground text-xs">{t('custom_clients.server_host')}</Label>
-              <Input className="h-8 w-64" value={formServerHost} onChange={(e) => setFormServerHost(e.target.value)} placeholder="your-server.com" />
+              <Input className="h-8 w-64" value={formServerHost} onChange={(e) => setFormServerHost(e.target.value)} disabled={!useCustomServer} />
             </div>
             <div className="flex flex-col gap-1">
               <Label className="text-muted-foreground text-xs">{t('custom_clients.server_key')}</Label>
-              <Input className="h-8 w-80" value={formServerKey} onChange={(e) => setFormServerKey(e.target.value)} placeholder="base64 public key" />
+              <Input className="h-8 w-80" value={formServerKey} onChange={(e) => setFormServerKey(e.target.value)} disabled={!useCustomServer} />
             </div>
             <div className="flex flex-col gap-1">
               <Label className="text-muted-foreground text-xs">{t('custom_clients.api_server')}</Label>
-              <Input className="h-8 w-64" value={formApiServer} onChange={(e) => setFormApiServer(e.target.value)} placeholder="http://your-server:21114" />
+              <Input className="h-8 w-64" value={formApiServer} onChange={(e) => setFormApiServer(e.target.value)} disabled={!useCustomServer} />
             </div>
             <div className="flex flex-col gap-1">
               <Label className="text-muted-foreground text-xs">{t('custom_clients.relay_server')}</Label>
-              <Input className="h-8 w-64" value={formRelayServer} onChange={(e) => setFormRelayServer(e.target.value)} placeholder="your-relay.com" />
+              <Input className="h-8 w-64" value={formRelayServer} onChange={(e) => setFormRelayServer(e.target.value)} disabled={!useCustomServer} />
             </div>
           </CardContent>
         </Card>

@@ -1,7 +1,6 @@
 export interface CustomClient {
   id: number
   name: string
-  app_name: string
   server_host: string
   server_key: string
   api_server: string
@@ -22,7 +21,6 @@ export interface CustomClient {
 
 export interface CustomClientForm {
   name: string
-  app_name: string
   server_host?: string
   server_key?: string
   api_server?: string

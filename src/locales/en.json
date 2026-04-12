@@ -385,6 +385,7 @@
     "edit": "Edit Custom Client",
     "basic_info": "Basic Info",
     "server_settings": "Server Settings",
+    "custom_server": "Custom server settings",
     "server_host": "ID Server (hbbs)",
     "server_key": "Key",
     "api_server": "API Server",
