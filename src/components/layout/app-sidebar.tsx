@@ -9,6 +9,8 @@ import {
   BookOpen,
   Shield,
   Package,
+  Hammer,
+  Server,
   Settings,
   ChevronRight,
   Share2,
@@ -78,7 +80,16 @@ const navItems: NavEntry[] = [
   { labelKey: 'sidebar.groups', icon: FolderTree, path: '/groups', adminOnly: true },
   { labelKey: 'sidebar.address_books', icon: BookOpen, path: '/address-books', adminOnly: true },
   { labelKey: 'sidebar.strategies', icon: Shield, path: '/strategies', adminOnly: true },
-  { labelKey: 'sidebar.custom_clients', icon: Package, path: '/custom-clients', adminOnly: true },
+  {
+    labelKey: 'sidebar.custom_clients',
+    icon: Package,
+    adminOnly: true,
+    children: [
+      { labelKey: 'sidebar.custom_clients_config', icon: Package, path: '/custom-clients' },
+      { labelKey: 'sidebar.custom_clients_pre_builds', icon: Hammer, path: '/custom-clients/pre-builds' },
+      { labelKey: 'sidebar.custom_clients_workers', icon: Server, path: '/custom-clients/workers' },
+    ],
+  },
   {
     labelKey: 'sidebar.settings',
     icon: Settings,
