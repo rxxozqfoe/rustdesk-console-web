@@ -185,7 +185,6 @@ export default function StrategiesPage() {
   const strategies = strategiesData?.list ?? []
   const total = strategiesData?.total ?? 0
 
-
   // ─── Mutations ──────────────────────────────────────────────────────────
 
   const createMutation = useMutation({
@@ -256,7 +255,6 @@ export default function StrategiesPage() {
       createMutation.mutate(data)
     }
   }
-
 
   const isMutating = createMutation.isPending || updateMutation.isPending
 

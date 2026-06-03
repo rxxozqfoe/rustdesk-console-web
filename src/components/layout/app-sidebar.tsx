@@ -86,7 +86,11 @@ const navItems: NavEntry[] = [
     adminOnly: true,
     children: [
       { labelKey: 'sidebar.custom_clients_config', icon: Package, path: '/custom-clients' },
-      { labelKey: 'sidebar.custom_clients_pre_builds', icon: Hammer, path: '/custom-clients/pre-builds' },
+      {
+        labelKey: 'sidebar.custom_clients_pre_builds',
+        icon: Hammer,
+        path: '/custom-clients/pre-builds',
+      },
       { labelKey: 'sidebar.custom_clients_workers', icon: Server, path: '/custom-clients/workers' },
     ],
   },

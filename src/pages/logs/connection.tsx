@@ -10,7 +10,12 @@ import { DataTableToolbar } from '@/components/data-table/data-table-toolbar'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { getAuditConns, deleteAuditConn, batchDeleteAuditConns, disconnectAuditConn } from '@/services/audit.service'
+import {
+  getAuditConns,
+  deleteAuditConn,
+  batchDeleteAuditConns,
+  disconnectAuditConn,
+} from '@/services/audit.service'
 import type { AuditConn } from '@/types/audit'
 
 function formatDate(value: string | number): string {

@@ -33,84 +33,179 @@ import type { CustomClient, CustomClientForm, BuildArtifact } from '@/types/cust
 import {
   ALL_CUSTOM_CLIENT_SECTIONS,
   getDefaultConfig,
-  configToState,
   stateToConfig,
   type OptionSection,
 } from '@/lib/rustdesk-options'
-import { Switch } from '@/components/ui/switch'
 
 const DEFAULT_CONFIG = getDefaultConfig(ALL_CUSTOM_CLIENT_SECTIONS)
 
 // ─── Reusable option cells ────────────────────────────────────────────────
 
-function ToggleCell({ optKey, value, onChange, t }: {
-  optKey: string; value: string; onChange: (v: string) => void; t: (key: string) => string
+function ToggleCell({
+  optKey,
+  value,
+  onChange,
+  t,
+}: {
+  optKey: string
+  value: string
+  onChange: (v: string) => void
+  t: (key: string) => string
 }) {
   const triState = value === '' ? 'unset' : value === 'Y' ? 'Y' : 'N'
-  const triggerClass = triState === 'Y'
-    ? 'h-8 w-24 border-green-500/50 bg-green-50 text-green-700 dark:bg-green-950/30 dark:text-green-400'
-    : triState === 'N'
-      ? 'h-8 w-24 border-red-500/50 bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-400'
-      : 'h-8 w-24'
+  const triggerClass =
+    triState === 'Y'
+      ? 'h-8 w-24 border-green-500/50 bg-green-50 text-green-700 dark:bg-green-950/30 dark:text-green-400'
+      : triState === 'N'
+        ? 'h-8 w-24 border-red-500/50 bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-400'
+        : 'h-8 w-24'
   return (
     <div className="flex flex-col gap-1">
-      <Label className="text-muted-foreground truncate text-xs">{t(`strategies.opt.${optKey}`)}</Label>
+      <Label className="text-muted-foreground truncate text-xs">
+        {t(`strategies.opt.${optKey}`)}
+      </Label>
       <Select value={triState} onValueChange={(v) => onChange(!v || v === 'unset' ? '' : v)}>
-        <SelectTrigger className={triggerClass}><SelectValue /></SelectTrigger>
-        <SelectContent>
-          <SelectItem value="unset">—</SelectItem>
-          <SelectItem value="Y"><span className="text-green-600 dark:text-green-400">{t('common.yes')}</span></SelectItem>
-          <SelectItem value="N"><span className="text-red-600 dark:text-red-400">{t('common.no')}</span></SelectItem>
-        </SelectContent>
-      </Select>
-    </div>
-  )
-}
-
-function SelectCell({ optKey, value, choices, onChange, t }: {
-  optKey: string; value: string; choices: string[]; onChange: (v: string) => void; t: (key: string) => string
-}) {
-  return (
-    <div className="flex flex-col gap-1">
-      <Label className="text-muted-foreground truncate text-xs">{t(`strategies.opt.${optKey}`)}</Label>
-      <Select value={value || 'unset'} onValueChange={(v) => onChange(!v || v === 'unset' ? '' : v)}>
-        <SelectTrigger className={value ? 'h-8 w-44 border-blue-500/50 bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400' : 'h-8 w-44'}>
+        <SelectTrigger className={triggerClass}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="unset">—</SelectItem>
-          {choices.map((c) => (<SelectItem key={c} value={c}>{t(`strategies.choice.${optKey}.${c}`)}</SelectItem>))}
+          <SelectItem value="Y">
+            <span className="text-green-600 dark:text-green-400">{t('common.yes')}</span>
+          </SelectItem>
+          <SelectItem value="N">
+            <span className="text-red-600 dark:text-red-400">{t('common.no')}</span>
+          </SelectItem>
         </SelectContent>
       </Select>
     </div>
   )
 }
 
-function TextCell({ optKey, value, onChange, t }: {
-  optKey: string; value: string; onChange: (v: string) => void; t: (key: string) => string
+function SelectCell({
+  optKey,
+  value,
+  choices,
+  onChange,
+  t,
+}: {
+  optKey: string
+  value: string
+  choices: string[]
+  onChange: (v: string) => void
+  t: (key: string) => string
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <Label className="text-muted-foreground truncate text-xs">{t(`strategies.opt.${optKey}`)}</Label>
-      <Input className={value ? 'h-8 w-44 border-blue-500/50 bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400' : 'h-8 w-44'} value={value} onChange={(e) => onChange(e.target.value)} />
+      <Label className="text-muted-foreground truncate text-xs">
+        {t(`strategies.opt.${optKey}`)}
+      </Label>
+      <Select
+        value={value || 'unset'}
+        onValueChange={(v) => onChange(!v || v === 'unset' ? '' : v)}
+      >
+        <SelectTrigger
+          className={
+            value
+              ? 'h-8 w-44 border-blue-500/50 bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400'
+              : 'h-8 w-44'
+          }
+        >
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="unset">—</SelectItem>
+          {choices.map((c) => (
+            <SelectItem key={c} value={c}>
+              {t(`strategies.choice.${optKey}.${c}`)}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   )
 }
 
-function OptionSectionCards({ sections, config, onConfigChange, t }: {
-  sections: OptionSection[]; config: Record<string, string>; onConfigChange: (key: string, value: string) => void; t: (key: string) => string
+function TextCell({
+  optKey,
+  value,
+  onChange,
+  t,
+}: {
+  optKey: string
+  value: string
+  onChange: (v: string) => void
+  t: (key: string) => string
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <Label className="text-muted-foreground truncate text-xs">
+        {t(`strategies.opt.${optKey}`)}
+      </Label>
+      <Input
+        className={
+          value
+            ? 'h-8 w-44 border-blue-500/50 bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400'
+            : 'h-8 w-44'
+        }
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    </div>
+  )
+}
+
+function OptionSectionCards({
+  sections,
+  config,
+  onConfigChange,
+  t,
+}: {
+  sections: OptionSection[]
+  config: Record<string, string>
+  onConfigChange: (key: string, value: string) => void
+  t: (key: string) => string
 }) {
   return (
     <>
       {sections.map((section) => (
         <Card key={section.titleKey}>
-          <CardHeader className="pt-4 pb-2"><CardTitle className="text-sm">{t(section.titleKey)}</CardTitle></CardHeader>
+          <CardHeader className="pt-4 pb-2">
+            <CardTitle className="text-sm">{t(section.titleKey)}</CardTitle>
+          </CardHeader>
           <CardContent className="flex flex-wrap gap-4 pb-4">
             {section.options.map((opt) => {
               const val = config[opt.key] ?? ''
-              if (opt.type === 'toggle') return <ToggleCell key={opt.key} optKey={opt.key} value={val} onChange={(v) => onConfigChange(opt.key, v)} t={t} />
-              if (opt.type === 'select') return <SelectCell key={opt.key} optKey={opt.key} value={val} choices={opt.choices!} onChange={(v) => onConfigChange(opt.key, v)} t={t} />
-              return <TextCell key={opt.key} optKey={opt.key} value={val} onChange={(v) => onConfigChange(opt.key, v)} t={t} />
+              if (opt.type === 'toggle')
+                return (
+                  <ToggleCell
+                    key={opt.key}
+                    optKey={opt.key}
+                    value={val}
+                    onChange={(v) => onConfigChange(opt.key, v)}
+                    t={t}
+                  />
+                )
+              if (opt.type === 'select')
+                return (
+                  <SelectCell
+                    key={opt.key}
+                    optKey={opt.key}
+                    value={val}
+                    choices={opt.choices!}
+                    onChange={(v) => onConfigChange(opt.key, v)}
+                    t={t}
+                  />
+                )
+              return (
+                <TextCell
+                  key={opt.key}
+                  optKey={opt.key}
+                  value={val}
+                  onChange={(v) => onConfigChange(opt.key, v)}
+                  t={t}
+                />
+              )
             })}
           </CardContent>
         </Card>
@@ -122,8 +217,19 @@ function OptionSectionCards({ sections, config, onConfigChange, t }: {
 // ─── Status Badge ─────────────────────────────────────────────────────────
 
 function StatusBadge({ status }: { status: string }) {
-  if (status === 'bundling') return <Badge variant="outline" className="animate-pulse border-blue-500 text-blue-600"><Loader2 className="mr-1 size-3 animate-spin" />{status}</Badge>
-  if (status === 'completed') return <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-400">{status}</Badge>
+  if (status === 'bundling')
+    return (
+      <Badge variant="outline" className="animate-pulse border-blue-500 text-blue-600">
+        <Loader2 className="mr-1 size-3 animate-spin" />
+        {status}
+      </Badge>
+    )
+  if (status === 'completed')
+    return (
+      <Badge className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-400">
+        {status}
+      </Badge>
+    )
   if (status === 'failed') return <Badge variant="destructive">{status}</Badge>
   return <Badge variant="outline">{status}</Badge>
 }
@@ -202,7 +308,7 @@ export default function CustomClientsPage() {
     .filter((a) => a.platform === formPlatform && a.arch === formArch)
     .map((a) => a.version)
     .filter((v, i, arr) => arr.indexOf(v) === i)
-  const formatOptions = formPlatform ? (PLATFORM_FORMATS[formPlatform] || ['zip']) : []
+  const formatOptions = formPlatform ? PLATFORM_FORMATS[formPlatform] || ['zip'] : []
 
   // ─── Mutations ────────────────────────────────────────────────────────
 
@@ -241,9 +347,11 @@ export default function CustomClientsPage() {
     setFormPlatformArch(defaultPA)
     // Pre-select first version and format for the default platform
     const [dp, da] = defaultPA ? defaultPA.split('/') : ['', '']
-    const defaultVersions = artifacts.filter((a) => a.platform === dp && a.arch === da).map((a) => a.version)
+    const defaultVersions = artifacts
+      .filter((a) => a.platform === dp && a.arch === da)
+      .map((a) => a.version)
     setFormVersion(defaultVersions[0] || '')
-    const defaultFormats = dp ? (PLATFORM_FORMATS[dp] || ['zip']) : []
+    const defaultFormats = dp ? PLATFORM_FORMATS[dp] || ['zip'] : []
     setFormFormat(defaultFormats[0] || '')
     setEditing(true)
   }
@@ -286,7 +394,8 @@ export default function CustomClientsPage() {
       header: t('custom_clients.target'),
       cell: ({ row }) => (
         <span className="text-xs">
-          {row.original.platform}/{row.original.arch} v{row.original.version} ({row.original.format})
+          {row.original.platform}/{row.original.arch} v{row.original.version} ({row.original.format}
+          )
         </span>
       ),
     },
@@ -298,11 +407,15 @@ export default function CustomClientsPage() {
           <StatusBadge status={row.original.status} />
           {row.original.status === 'failed' && row.original.error && (
             <span className="text-destructive text-xs" title={row.original.error}>
-              {row.original.error.length > 30 ? row.original.error.substring(0, 30) + '...' : row.original.error}
+              {row.original.error.length > 30
+                ? row.original.error.substring(0, 30) + '...'
+                : row.original.error}
             </span>
           )}
           {row.original.status === 'completed' && row.original.file_size > 0 && (
-            <span className="text-muted-foreground text-xs">{formatFileSize(row.original.file_size)}</span>
+            <span className="text-muted-foreground text-xs">
+              {formatFileSize(row.original.file_size)}
+            </span>
           )}
         </div>
       ),
@@ -310,7 +423,8 @@ export default function CustomClientsPage() {
     {
       accessorKey: 'created_at',
       header: t('common.created_at'),
-      cell: ({ row }) => row.original.created_at ? new Date(row.original.created_at).toLocaleString() : '—',
+      cell: ({ row }) =>
+        row.original.created_at ? new Date(row.original.created_at).toLocaleString() : '—',
     },
     {
       id: 'actions',
@@ -320,13 +434,18 @@ export default function CustomClientsPage() {
           {row.original.status === 'completed' && (
             <a
               href={getDownloadUrl(row.original)}
-              className="inline-flex items-center justify-center rounded-md p-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground"
+              className="hover:bg-accent hover:text-accent-foreground inline-flex items-center justify-center rounded-md p-2 text-sm font-medium"
               title={t('custom_clients.download')}
             >
               <Download className="size-4" />
             </a>
           )}
-          <Button variant="ghost" size="sm" onClick={() => handlePreview(row.original.id)} title={t('custom_clients.preview')}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handlePreview(row.original.id)}
+            title={t('custom_clients.preview')}
+          >
             <Eye className="size-4" />
           </Button>
           <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(row.original.id)}>
@@ -363,14 +482,20 @@ export default function CustomClientsPage() {
 
         {/* Basic info */}
         <Card>
-          <CardHeader className="pt-4 pb-2"><CardTitle className="text-sm">{t('custom_clients.basic_info')}</CardTitle></CardHeader>
+          <CardHeader className="pt-4 pb-2">
+            <CardTitle className="text-sm">{t('custom_clients.basic_info')}</CardTitle>
+          </CardHeader>
           <CardContent className="flex flex-wrap items-end gap-6">
             <div className="flex flex-col gap-1">
               <Label className="text-muted-foreground text-xs">{t('custom_clients.name')}</Label>
-              <Input className="h-9 w-64" value={formName} onChange={(e) => setFormName(e.target.value)} placeholder={t('custom_clients.name_placeholder')} />
+              <Input
+                className="h-9 w-64"
+                value={formName}
+                onChange={(e) => setFormName(e.target.value)}
+                placeholder={t('custom_clients.name_placeholder')}
+              />
             </div>
-            <div className="flex flex-col gap-1">
-            </div>
+            <div className="flex flex-col gap-1"></div>
           </CardContent>
         </Card>
 
@@ -379,7 +504,7 @@ export default function CustomClientsPage() {
           <CardHeader className="pt-4 pb-2">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm">{t('custom_clients.server_settings')}</CardTitle>
-              <label className="flex items-center gap-2 text-xs cursor-pointer">
+              <label className="flex cursor-pointer items-center gap-2 text-xs">
                 <input
                   type="checkbox"
                   checked={useCustomServer}
@@ -400,63 +525,123 @@ export default function CustomClientsPage() {
           </CardHeader>
           <CardContent className="flex flex-wrap gap-6">
             <div className="flex flex-col gap-1">
-              <Label className="text-muted-foreground text-xs">{t('custom_clients.server_host')}</Label>
-              <Input className="h-8 w-64" value={formServerHost} onChange={(e) => setFormServerHost(e.target.value)} disabled={!useCustomServer} />
+              <Label className="text-muted-foreground text-xs">
+                {t('custom_clients.server_host')}
+              </Label>
+              <Input
+                className="h-8 w-64"
+                value={formServerHost}
+                onChange={(e) => setFormServerHost(e.target.value)}
+                disabled={!useCustomServer}
+              />
             </div>
             <div className="flex flex-col gap-1">
-              <Label className="text-muted-foreground text-xs">{t('custom_clients.server_key')}</Label>
-              <Input className="h-8 w-80" value={formServerKey} onChange={(e) => setFormServerKey(e.target.value)} disabled={!useCustomServer} />
+              <Label className="text-muted-foreground text-xs">
+                {t('custom_clients.server_key')}
+              </Label>
+              <Input
+                className="h-8 w-80"
+                value={formServerKey}
+                onChange={(e) => setFormServerKey(e.target.value)}
+                disabled={!useCustomServer}
+              />
             </div>
             <div className="flex flex-col gap-1">
-              <Label className="text-muted-foreground text-xs">{t('custom_clients.api_server')}</Label>
-              <Input className="h-8 w-64" value={formApiServer} onChange={(e) => setFormApiServer(e.target.value)} disabled={!useCustomServer} />
+              <Label className="text-muted-foreground text-xs">
+                {t('custom_clients.api_server')}
+              </Label>
+              <Input
+                className="h-8 w-64"
+                value={formApiServer}
+                onChange={(e) => setFormApiServer(e.target.value)}
+                disabled={!useCustomServer}
+              />
             </div>
             <div className="flex flex-col gap-1">
-              <Label className="text-muted-foreground text-xs">{t('custom_clients.relay_server')}</Label>
-              <Input className="h-8 w-64" value={formRelayServer} onChange={(e) => setFormRelayServer(e.target.value)} disabled={!useCustomServer} />
+              <Label className="text-muted-foreground text-xs">
+                {t('custom_clients.relay_server')}
+              </Label>
+              <Input
+                className="h-8 w-64"
+                value={formRelayServer}
+                onChange={(e) => setFormRelayServer(e.target.value)}
+                disabled={!useCustomServer}
+              />
             </div>
           </CardContent>
         </Card>
 
         {/* Target platform */}
         <Card>
-          <CardHeader className="pt-4 pb-2"><CardTitle className="text-sm">{t('custom_clients.target')}</CardTitle></CardHeader>
+          <CardHeader className="pt-4 pb-2">
+            <CardTitle className="text-sm">{t('custom_clients.target')}</CardTitle>
+          </CardHeader>
           <CardContent className="flex flex-wrap items-end gap-6">
             {artifacts.length === 0 ? (
               <p className="text-muted-foreground text-sm">{t('custom_clients.no_pre_builds')}</p>
             ) : (
               <>
                 <div className="flex flex-col gap-1">
-                  <Label className="text-muted-foreground text-xs">{t('custom_clients.select_platform')}</Label>
-                  <Select value={formPlatformArch} onValueChange={(v) => {
-                    setFormPlatformArch(v)
-                    const [p, a] = v.split('/')
-                    const vers = artifacts.filter((ar) => ar.platform === p && ar.arch === a).map((ar) => ar.version)
-                    setFormVersion(vers[0] || '')
-                    const fmts = p ? (PLATFORM_FORMATS[p] || ['zip']) : []
-                    setFormFormat(fmts[0] || '')
-                  }}>
-                    <SelectTrigger className="h-9 w-36"><SelectValue /></SelectTrigger>
+                  <Label className="text-muted-foreground text-xs">
+                    {t('custom_clients.select_platform')}
+                  </Label>
+                  <Select
+                    value={formPlatformArch}
+                    onValueChange={(value) => {
+                      const v = value ?? ''
+                      setFormPlatformArch(v)
+                      const [p, a] = v.split('/')
+                      const vers = artifacts
+                        .filter((ar) => ar.platform === p && ar.arch === a)
+                        .map((ar) => ar.version)
+                      setFormVersion(vers[0] || '')
+                      const fmts = p ? PLATFORM_FORMATS[p] || ['zip'] : []
+                      setFormFormat(fmts[0] || '')
+                    }}
+                  >
+                    <SelectTrigger className="h-9 w-36">
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
-                      {platformArchOptions.map((pa) => (<SelectItem key={pa} value={pa}>{pa}</SelectItem>))}
+                      {platformArchOptions.map((pa) => (
+                        <SelectItem key={pa} value={pa}>
+                          {pa}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <Label className="text-muted-foreground text-xs">{t('custom_clients.select_version')}</Label>
-                  <Select value={formVersion} onValueChange={setFormVersion}>
-                    <SelectTrigger className="h-9 w-28"><SelectValue /></SelectTrigger>
+                  <Label className="text-muted-foreground text-xs">
+                    {t('custom_clients.select_version')}
+                  </Label>
+                  <Select value={formVersion} onValueChange={(v) => setFormVersion(v ?? '')}>
+                    <SelectTrigger className="h-9 w-28">
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
-                      {versionOptions.map((v) => (<SelectItem key={v} value={v}>{v}</SelectItem>))}
+                      {versionOptions.map((v) => (
+                        <SelectItem key={v} value={v}>
+                          {v}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <Label className="text-muted-foreground text-xs">{t('custom_clients.select_format')}</Label>
-                  <Select value={formFormat} onValueChange={setFormFormat}>
-                    <SelectTrigger className="h-9 w-24"><SelectValue /></SelectTrigger>
+                  <Label className="text-muted-foreground text-xs">
+                    {t('custom_clients.select_format')}
+                  </Label>
+                  <Select value={formFormat} onValueChange={(v) => setFormFormat(v ?? '')}>
+                    <SelectTrigger className="h-9 w-24">
+                      <SelectValue />
+                    </SelectTrigger>
                     <SelectContent>
-                      {formatOptions.map((f) => (<SelectItem key={f} value={f}>{f}</SelectItem>))}
+                      {formatOptions.map((f) => (
+                        <SelectItem key={f} value={f}>
+                          {f}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -472,18 +657,34 @@ export default function CustomClientsPage() {
             <TabsTrigger value="override">{t('custom_clients.override_settings')}</TabsTrigger>
           </TabsList>
           <TabsContent value="default" className="space-y-4">
-            <p className="text-muted-foreground text-xs">{t('custom_clients.default_settings_desc')}</p>
-            <OptionSectionCards sections={ALL_CUSTOM_CLIENT_SECTIONS} config={formDefaultSettings} onConfigChange={(k, v) => setFormDefaultSettings((p) => ({ ...p, [k]: v }))} t={t} />
+            <p className="text-muted-foreground text-xs">
+              {t('custom_clients.default_settings_desc')}
+            </p>
+            <OptionSectionCards
+              sections={ALL_CUSTOM_CLIENT_SECTIONS}
+              config={formDefaultSettings}
+              onConfigChange={(k, v) => setFormDefaultSettings((p) => ({ ...p, [k]: v }))}
+              t={t}
+            />
           </TabsContent>
           <TabsContent value="override" className="space-y-4">
-            <p className="text-muted-foreground text-xs">{t('custom_clients.override_settings_desc')}</p>
-            <OptionSectionCards sections={ALL_CUSTOM_CLIENT_SECTIONS} config={formOverrideSettings} onConfigChange={(k, v) => setFormOverrideSettings((p) => ({ ...p, [k]: v }))} t={t} />
+            <p className="text-muted-foreground text-xs">
+              {t('custom_clients.override_settings_desc')}
+            </p>
+            <OptionSectionCards
+              sections={ALL_CUSTOM_CLIENT_SECTIONS}
+              config={formOverrideSettings}
+              onConfigChange={(k, v) => setFormOverrideSettings((p) => ({ ...p, [k]: v }))}
+              t={t}
+            />
           </TabsContent>
         </Tabs>
 
         {/* Save */}
         <div className="flex justify-end gap-2 pt-2">
-          <Button variant="outline" onClick={() => setEditing(false)}>{t('common.cancel')}</Button>
+          <Button variant="outline" onClick={() => setEditing(false)}>
+            {t('common.cancel')}
+          </Button>
           <Button onClick={handleSave} disabled={!canSave || createMutation.isPending}>
             {t('custom_clients.generate')}
           </Button>
@@ -513,18 +714,33 @@ export default function CustomClientsPage() {
         pageSize={pageSize}
         total={total}
         onPageChange={setPage}
-        onPageSizeChange={(size) => { setPageSize(size); setPage(1) }}
+        onPageSizeChange={(size) => {
+          setPageSize(size)
+          setPage(1)
+        }}
       />
 
       {/* Preview modal */}
       {previewContent !== null && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setPreviewContent(null)}>
-          <Card className="max-h-[85vh] w-[600px] flex flex-col" onClick={(e) => e.stopPropagation()}>
-            <CardHeader><CardTitle className="text-sm">{t('custom_clients.preview')}</CardTitle></CardHeader>
-            <CardContent className="flex-1 overflow-hidden flex flex-col">
-              <pre className="bg-muted max-h-[50vh] overflow-auto rounded p-4 font-mono text-xs break-all whitespace-pre-wrap">{previewContent}</pre>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          onClick={() => setPreviewContent(null)}
+        >
+          <Card
+            className="flex max-h-[85vh] w-[600px] flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <CardHeader>
+              <CardTitle className="text-sm">{t('custom_clients.preview')}</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-1 flex-col overflow-hidden">
+              <pre className="bg-muted max-h-[50vh] overflow-auto rounded p-4 font-mono text-xs break-all whitespace-pre-wrap">
+                {previewContent}
+              </pre>
               <div className="mt-4 flex justify-end">
-                <Button size="sm" onClick={() => setPreviewContent(null)}>{t('common.close')}</Button>
+                <Button size="sm" onClick={() => setPreviewContent(null)}>
+                  {t('common.close')}
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -534,8 +750,12 @@ export default function CustomClientsPage() {
       {/* Delete confirmation */}
       <ConfirmDialog
         open={deleteTarget !== null}
-        onOpenChange={(open) => { if (!open) setDeleteTarget(null) }}
-        onConfirm={() => { if (deleteTarget !== null) deleteMutation.mutate(deleteTarget) }}
+        onOpenChange={(open) => {
+          if (!open) setDeleteTarget(null)
+        }}
+        onConfirm={() => {
+          if (deleteTarget !== null) deleteMutation.mutate(deleteTarget)
+        }}
         loading={deleteMutation.isPending}
       />
     </div>

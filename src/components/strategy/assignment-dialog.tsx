@@ -8,14 +8,11 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  assignStrategy,
-  getStrategyAssignments,
-} from '@/services/strategy.service'
+import { assignStrategy, getStrategyAssignments } from '@/services/strategy.service'
 import { getPeers } from '@/services/peer.service'
 import { getUsers } from '@/services/user.service'
 import { getGroups } from '@/services/group.service'
-import type { Strategy, StrategyAssignment } from '@/types/strategy'
+import type { Strategy } from '@/types/strategy'
 
 interface AssignmentDialogProps {
   strategy: Strategy | null
@@ -103,9 +100,7 @@ export function AssignmentDialog({
       new Set(currentAssignments.filter((a) => a.type === 'user').map((a) => String(a.id))),
     )
     setSelectedGroups(
-      new Set(
-        currentAssignments.filter((a) => a.type === 'device_group').map((a) => String(a.id)),
-      ),
+      new Set(currentAssignments.filter((a) => a.type === 'device_group').map((a) => String(a.id))),
     )
   }, [open, currentAssignments])
 
@@ -255,9 +250,7 @@ export function AssignmentDialog({
       (currentAssignments ?? []).filter((a) => a.type === 'user').map((a) => String(a.id)),
     )
     const serverGroups = new Set(
-      (currentAssignments ?? [])
-        .filter((a) => a.type === 'device_group')
-        .map((a) => String(a.id)),
+      (currentAssignments ?? []).filter((a) => a.type === 'device_group').map((a) => String(a.id)),
     )
 
     const addPeers = [...selectedPeers].filter((id) => !serverPeers.has(id))
@@ -329,7 +322,7 @@ export function AssignmentDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="flex max-h-[85vh] w-[95vw] sm:max-w-7xl flex-col">
+      <DialogContent className="flex max-h-[85vh] w-[95vw] flex-col sm:max-w-7xl">
         <DialogHeader>
           <DialogTitle>
             {t('strategies.assignments')} — {strategy?.name}
@@ -372,9 +365,7 @@ export function AssignmentDialog({
                 }}
               >
                 {t(`strategies.type_${t_}`)}
-                {count > 0 && (
-                  <span className="ml-1.5 text-xs opacity-70">({count})</span>
-                )}
+                {count > 0 && <span className="ml-1.5 text-xs opacity-70">({count})</span>}
               </button>
             )
           })}
@@ -382,7 +373,7 @@ export function AssignmentDialog({
 
         {/* Search */}
         <div className="relative">
-          <Search className="text-muted-foreground absolute left-3 top-1/2 size-4 -translate-y-1/2" />
+          <Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
           <Input
             className="h-9 pl-9"
             placeholder={t('common.search')}

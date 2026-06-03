@@ -1,15 +1,8 @@
 import { apiGet, apiPost } from '@/lib/api'
 import type { PaginatedData } from '@/types/api'
-import type {
-  CustomClient,
-  CustomClientForm,
-  BuildArtifact,
-} from '@/types/custom-client'
+import type { CustomClient, CustomClientForm, BuildArtifact } from '@/types/custom-client'
 
-export function getCustomClients(params?: {
-  page?: number
-  page_size?: number
-}) {
+export function getCustomClients(params?: { page?: number; page_size?: number }) {
   return apiGet<PaginatedData<CustomClient>>(
     '/api/admin/custom-client/list',
     params as Record<string, unknown>,
@@ -58,7 +51,13 @@ export function getBuildArtifacts(params?: { page?: number; page_size?: number }
 
 // Download is a public endpoint (no auth). URL includes filename so wget/curl
 // saves with the correct name without needing --content-disposition.
-export function getDownloadUrl(cc: { id: number; version: string; platform: string; arch: string; format: string }) {
+export function getDownloadUrl(cc: {
+  id: number
+  version: string
+  platform: string
+  arch: string
+  format: string
+}) {
   const base = import.meta.env.VITE_API_BASE_URL || ''
   const filename = `rustdesk-${cc.version}-${cc.platform}-${cc.arch}.${cc.format}`
   return `${base}/api/admin/custom-client/download/${cc.id}/${filename}`
