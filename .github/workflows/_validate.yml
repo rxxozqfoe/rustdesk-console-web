@@ -1,0 +1,290 @@
+name: Validate (reusable)
+
+# Reusable validation pipeline called by ci.yml (on PR / push to main).
+# Keeps the validation rules in a single place so the gate is identical
+# whichever entry point triggers it.
+#
+# This is a Node / Vite / React (TypeScript) front-end:
+#   - package manager: pnpm  (pnpm-lock.yaml present, lockfileVersion 6.0)
+#   - scripts wired straight from package.json — no invented script names:
+#       lint   -> `pnpm lint`   (eslint .)
+#       build  -> `pnpm build`  (tsc -b && vite build)  — the `tsc -b`
+#                 project-references build is the type-check, so a
+#                 separate `tsc --noEmit` step would be redundant.
+#   - prettier is configured (.prettierrc + eslint-plugin-prettier) but
+#     there is no `format` script, so we invoke `prettier --check`
+#     directly via pnpm dlx against the committed config.
+#   - there is NO test runner (see repo CLAUDE.md: "There is no test
+#     runner configured. Do not add one without asking."), so no test
+#     step is wired.
+#
+# Supply-chain scan: google/osv-scanner-action (OSV.dev) is preferred
+# over `pnpm audit`. It queries the same OSV database that Renovate's
+# osvVulnerabilityAlerts uses (so CI and Renovate stay aligned), supports
+# SARIF output to the GitHub Security tab, and is not coupled to the npm
+# advisory registry's rate limits / availability the way `pnpm audit` is.
+
+on:
+  workflow_call:
+
+# Container security gates (hadolint, base-image cosign verify, Trivy) are
+# included here alongside the source-level gates so the image is held to the
+# same bar whether it is exercised by a PR (ci.yml) or a release tag
+# (publish.yml). The image build/scan in `scan` is a local load (no push);
+# the publish pipeline does the real push-by-digest build separately.
+
+env:
+  # pnpm-lock.yaml is lockfileVersion 6.0, which is produced by pnpm 8.x.
+  # Pin explicitly because the repo declares no `packageManager` field for
+  # the action to read.
+  PNPM_VERSION: "8"
+  NODE_VERSION: "22"
+
+jobs:
+  # -------------------------------------------------------------------
+  # Lint + format + typecheck + build. All four run in one job because
+  # they share the same installed node_modules; splitting them would pay
+  # the install cost four times for no parallelism benefit on a project
+  # this size.
+  # -------------------------------------------------------------------
+  build:
+    name: Lint / format / typecheck / build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # pnpm must be installed before setup-node so that setup-node's
+      # built-in pnpm cache (cache: pnpm) can locate the pnpm binary.
+      - name: Install pnpm
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint (eslint)
+        run: pnpm lint
+
+      # Prettier check uses the same plugin set the project depends on
+      # (prettier + prettier-plugin-tailwindcss are in devDependencies),
+      # so run it through the installed tree rather than pnpm dlx to avoid
+      # resolving a different prettier version.
+      - name: Format check (prettier)
+        run: pnpm exec prettier --check .
+
+      # `pnpm build` is `tsc -b && vite build`; the `tsc -b` step is the
+      # full project-references type-check, and `vite build` proves the
+      # bundle compiles. No separate typecheck step needed.
+      - name: Typecheck + build
+        run: pnpm build
+
+  # -------------------------------------------------------------------
+  # Dependency vulnerability scan (OSV.dev). Two passes by design,
+  # mirroring the server template's Trivy pattern:
+  #
+  #   1. "block" pass — fails the job on any vulnerability OSV knows
+  #      about for the locked dependency set.
+  #   2. "report" pass — runs unconditionally (if: always()) and uploads
+  #      a SARIF report to the GitHub Security tab so findings are
+  #      visible even when the block pass fails.
+  # -------------------------------------------------------------------
+  vuln-scan:
+    name: Dependency vuln scan (osv-scanner)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # Block pass: scans pnpm-lock.yaml; the reusable workflow exits
+      # non-zero if any vulnerability is found, failing CI.
+      - name: OSV scan — block on findings
+        uses: google/osv-scanner-action/osv-scanner-action@9a498708959aeaef5ef730655706c5a1df1edbc2 # v2.3.8
+        with:
+          scan-args: |-
+            --lockfile=pnpm-lock.yaml
+            ./
+
+      # Report pass: always runs (even if the block pass failed) and
+      # emits SARIF so the full picture lands in the Security tab.
+      - name: OSV scan — full SARIF report
+        if: always()
+        uses: google/osv-scanner-action/osv-reporter-action@9a498708959aeaef5ef730655706c5a1df1edbc2 # v2.3.8
+        with:
+          scan-args: |-
+            --output=osv-results.sarif
+            --format=sarif
+            --lockfile=pnpm-lock.yaml
+            ./
+
+      - name: Upload OSV SARIF to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@c10b8064de6f491fea524254123dbe5e09572f13 # v4.35.1
+        with:
+          sarif_file: osv-results.sarif
+          category: osv-scanner
+
+  # -------------------------------------------------------------------
+  # Dependency review — PR-only. Flags newly introduced dependencies
+  # with known vulnerabilities or disallowed licenses by diffing the
+  # base and head of the PR. Has no meaning on a push (no base to diff
+  # against), so it is gated to pull_request events.
+  # -------------------------------------------------------------------
+  dependency-review:
+    name: Dependency review (PR only)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Dependency review
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: high
+
+  # -------------------------------------------------------------------
+  # Dockerfile lint (hadolint) + a digest-pin gate. hadolint covers the
+  # general Dockerfile best-practice rules; the awk step enforces that
+  # every FROM is pinned to an immutable @sha256 digest (hadolint has no
+  # native rule for this — see hadolint/hadolint#773).
+  # -------------------------------------------------------------------
+  dockerfile-lint:
+    name: Dockerfile lint (hadolint + digest pin)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run hadolint
+        uses: hadolint/hadolint-action@2332a7b74a6de0dda2e2221d575162eba76ba5e5 # v3.3.0
+        with:
+          dockerfile: Dockerfile
+          config: .hadolint.yaml
+          failure-threshold: warning
+
+      # hadolint has no built-in rule for digest pinning. DL3006/DL3007
+      # only enforce "has a tag" and "not :latest". This step fills that gap.
+      - name: Enforce FROM @sha256 digest pin
+        run: |
+          set -euo pipefail
+          unpinned=$(awk '/^FROM/ && $0 !~ /@sha256:[a-f0-9]{64}/ {print NR ": " $0}' Dockerfile || true)
+          if [ -n "$unpinned" ]; then
+            echo "::error::Unpinned FROM instruction(s) detected:"
+            echo "$unpinned"
+            exit 1
+          fi
+          echo "All FROM instructions are pinned to a digest."
+
+  # -------------------------------------------------------------------
+  # Verify cosign/sigstore signatures of pinned base images against
+  # .github/cosign-image-policy.json. Dockerfile-agnostic: the script
+  # parses the FROM lines and matches each image against the policy file,
+  # failing on any image that is neither signed-and-verified nor on the
+  # explicit unsigned allow-list.
+  # -------------------------------------------------------------------
+  verify-base-images:
+    name: Verify base image signatures
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install cosign
+        uses: sigstore/cosign-installer@cad07c2e89fa2edd6e2d7bab4c1aa38e53f76003 # v4.1.1
+
+      - name: Verify all FROM base images against policy
+        run: bash .github/scripts/verify-base-images.sh Dockerfile
+
+  # -------------------------------------------------------------------
+  # Trivy CVE scan. Builds an amd64 image into the local daemon (no
+  # registry push), scans, and uploads SARIF to GitHub code scanning.
+  # -------------------------------------------------------------------
+  scan:
+    name: Trivy CVE scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
+
+      - name: Build local image for scanning
+        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
+        with:
+          context: .
+          file: ./Dockerfile
+          load: true
+          tags: local/scan-target:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Two Trivy passes by design:
+      #
+      #  1. "block" pass — severity=CRITICAL,HIGH, exit-code=1, table
+      #     format. Fails the job if any blocking-severity finding shows up.
+      #     No SARIF here so the failure exits cleanly without disentangling
+      #     exit-code vs severity semantics (aquasecurity/trivy-action#309).
+      #
+      #  2. "report" pass — every severity, exit-code=0, SARIF format. Runs
+      #     unconditionally (if: always()) so even when the block pass fails,
+      #     the Security tab still gets the full picture.
+      - name: Trivy scan — block on CRITICAL/HIGH
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        with:
+          image-ref: local/scan-target:${{ github.sha }}
+          format: table
+          severity: CRITICAL,HIGH
+          exit-code: "1"
+          ignore-unfixed: true
+          vuln-type: os,library
+
+      - name: Trivy scan — full SARIF report (all severities)
+        if: always()
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # v0.35.0
+        with:
+          image-ref: local/scan-target:${{ github.sha }}
+          format: sarif
+          output: trivy-results.sarif
+          # No severity filter and exit-code=0: this pass exists purely to
+          # populate the GitHub Security tab. The block pass above gates the
+          # job.
+          exit-code: "0"
+          ignore-unfixed: true
+          vuln-type: os,library
+
+      - name: Upload Trivy SARIF to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@c10b8064de6f491fea524254123dbe5e09572f13 # v4.35.1
+        with:
+          sarif_file: trivy-results.sarif
+          category: trivy

@@ -1,0 +1,36 @@
+name: CI
+
+# Runs on every PR to main and every push to main. Delegates the actual
+# validation to the reusable _validate.yml workflow so the same gate is
+# shared with the release pipeline (publish.yml, on v*.*.* tags).
+#
+# The gate covers source quality (lint + format + typecheck + build +
+# dependency vulnerability scan) and the container image (hadolint +
+# digest-pin, base-image cosign verification, and a Trivy CVE scan of a
+# locally-built image). The actual image publish — multi-arch build,
+# sign and attest — lives in publish.yml and runs on release tags.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# Collapse redundant runs on the same ref. On a PR a new push cancels the
+# previous still-running validation (cancel-in-progress). On a push to
+# main we do NOT cancel, so every commit that lands on the default branch
+# keeps its own complete CI record.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  validate:
+    uses: ./.github/workflows/_validate.yml
+    permissions:
+      contents: read
+      security-events: write   # for the osv-scanner job to upload SARIF
+      pull-requests: read      # for the dependency-review job (PR only)

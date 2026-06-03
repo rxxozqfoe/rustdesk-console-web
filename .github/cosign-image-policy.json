@@ -1,0 +1,29 @@
+{
+  "$comment": "Policy for verifying base image signatures with cosign.",
+
+  "$schema_description": {
+    "policies": "Images with sigstore signatures. Matched by image-name prefix (startswith). Each entry specifies the cosign OIDC issuer and certificate-identity regex to require.",
+    "unsigned": "Images we knowingly cannot verify with sigstore today. Listed explicitly (rather than silent-skip) so that any new base image defaults to failing the check until someone makes a conscious decision."
+  },
+
+  "policies": [
+    {
+      "name": "Chainguard nginx",
+      "match": "cgr.dev/chainguard/nginx",
+      "issuer": "https://token.actions.githubusercontent.com",
+      "identity": "^https://github\\.com/chainguard-images/images/\\.github/workflows/release\\.yaml@refs/heads/main$",
+      "reason": "Chainguard Containers are cosign keyless-signed by the chainguard-images/images release workflow (GitHub Actions OIDC). Verified against the published image digest."
+    }
+  ],
+
+  "unsigned": [
+    {
+      "match": "docker.io/library/node",
+      "reason": "Docker Hub official images do not publish sigstore signatures we can verify in CI; relying on digest pinning + Renovate digest bumps + the Trivy scan instead. Build-stage only — node never ships in the runtime image."
+    },
+    {
+      "match": "node",
+      "reason": "Same as above (short form of the Docker Hub official node image)."
+    }
+  ]
+}
