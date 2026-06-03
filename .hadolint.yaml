@@ -1,0 +1,31 @@
+# Hadolint rules: https://github.com/hadolint/hadolint/wiki
+#
+# Policy:
+#  - Every FROM must be pinned to a digest (not just a tag).
+#  - No :latest.
+#  - This is a multi-stage build: a node:bookworm-slim builder running pnpm
+#    to produce the static Vite bundle, copied into a Chainguard nginx
+#    runtime that serves it as the nonroot user.
+#
+# NOTE: hadolint has no built-in rule requiring `@sha256:` digest pinning.
+# DL3006/DL3007 only enforce "has a tag" and "not :latest". The digest
+# requirement is enforced by a separate awk step in
+# .github/workflows/_validate.yml ("Enforce FROM @sha256 digest pin").
+# When hadolint adds native support (upstream issue hadolint/hadolint#773)
+# that step can be removed in favour of the native rule.
+
+failure-threshold: warning
+
+# Treat these as errors rather than info/warnings.
+override:
+  error:
+    - DL3007  # Using latest
+    - DL3022  # COPY --from should reference previously defined FROM alias
+    - DL3023  # COPY --from cannot reference its own FROM
+    - DL3024  # FROM aliases must be unique
+    - DL3026  # Use only official/trusted FROM images
+
+trustedRegistries:
+  - docker.io
+  - cgr.dev
+  - ghcr.io
