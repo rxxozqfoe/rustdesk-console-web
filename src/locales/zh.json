@@ -38,7 +38,10 @@
     "forgot_password": "忘記密碼？",
     "login": "登入",
     "or": "或",
-    "login_with": "使用 {{provider}} 登入"
+    "login_with": "使用 {{provider}} 登入",
+    "oauth_popup_blocked": "彈出視窗已被封鎖。請允許此網站的彈出視窗後再試一次。",
+    "oauth_timeout": "OAuth 登入逾時。若您已完成登入，可能是此 OAuth 帳號尚未綁定管理員帳號——請先完成綁定後再試一次。",
+    "oauth_failed": "OAuth 登入失敗，請再試一次。"
   },
   "common": {
     "add": "新增",

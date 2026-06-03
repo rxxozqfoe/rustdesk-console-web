@@ -46,10 +46,7 @@ export interface LoginOptions {
   disable_pwd: boolean
   auto_oidc: boolean
   register: boolean
-  ops: OAuthProvider[]
-}
-
-export interface OAuthProvider {
-  name: string
-  type: string
+  // The backend returns the list of provider `op` identifiers (e.g. "github",
+  // "google") as plain strings, used directly as the `op` for the OAuth flow.
+  ops: string[]
 }
