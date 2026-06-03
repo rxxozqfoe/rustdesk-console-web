@@ -177,8 +177,8 @@ export default function LoginPage() {
     }
     oauthPopupRef.current = popup
 
-    const startedAt = Date.now()
-
+    // The overall deadline is owned by this timeout, which clears the poll
+    // interval via stopOAuthPolling().
     oauthTimeoutRef.current = setTimeout(() => {
       stopOAuthPolling()
       closeOAuthPopup()
@@ -186,12 +186,6 @@ export default function LoginPage() {
     }, OAUTH_POLL_TIMEOUT_MS)
 
     oauthIntervalRef.current = setInterval(async () => {
-      // Safety net in case the timeout handler raced the interval.
-      if (Date.now() - startedAt > OAUTH_POLL_TIMEOUT_MS) {
-        stopOAuthPolling()
-        closeOAuthPopup()
-        return
-      }
       try {
         const res = await pollOAuthQuery(begin.code)
         // Success: persist auth and navigate.
