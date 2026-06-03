@@ -1,0 +1,14 @@
+# Code owners for rustdesk-console-web.
+#
+# The CI/CD and dependency-automation surface is security-sensitive:
+# workflow files run with repo credentials, and Renovate config governs
+# what dependency changes land. Require owner review for any change to
+# them.
+
+# Default owner for everything in the repo.
+*                       @rxxozqfoe
+
+# CI/CD workflows and supporting config.
+/.github/workflows/     @rxxozqfoe
+/.github/CODEOWNERS     @rxxozqfoe
+/renovate.json          @rxxozqfoe

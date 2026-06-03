@@ -1,0 +1,56 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+
+  "//": "Mend-curated best-practices baseline plus the explicit presets we want.",
+  "//1": ":dependencyDashboard maintains a Dependency Dashboard issue listing pending / blocked / awaiting-approval updates.",
+  "//2": ":semanticCommits emits conventional-commits-style PR messages (the repo also uses conventional commits).",
+  "//3": "helpers:pinGitHubActionDigestsToSemver pins uses: SHAs with a precise semver comment (# v4.2.3) instead of a floating tag.",
+  "extends": [
+    "config:best-practices",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    "helpers:pinGitHubActionDigestsToSemver"
+  ],
+
+  "timezone": "Asia/Taipei",
+
+  "//4": "Renovate may OPEN PRs only in this window. Monday-morning batches give a single weekly inbox. vulnerabilityAlerts overrides this with an empty schedule so CVE PRs are never delayed.",
+  "schedule": ["before 9am on monday"],
+
+  "labels": ["dependencies"],
+
+  "//5": "automerge explicitly false: every Renovate PR requires a human merge; prevents a preset or future rule flipping it on by accident.",
+  "automerge": false,
+
+  "prHourlyLimit": 10,
+  "prConcurrentLimit": 10,
+
+  "//6": "pinDigests: pin tags (@v4, :node20) to SHA references. Delivered by the presets in config:best-practices; made explicit here.",
+  "pinDigests": true,
+
+  "//7": "minimumReleaseAge: a new version must age this long before a PR is opened, buying a window to catch malicious releases. vulnerabilityAlerts overrides this to null for CVE fixes.",
+  "minimumReleaseAge": "15 days",
+
+  "//8": "internalChecksFilter flexible: if the newest version is too new for minimumReleaseAge, fall back to the newest aged version instead of waiting.",
+  "internalChecksFilter": "flexible",
+
+  "//9": "osvVulnerabilityAlerts: query OSV.dev for advisories on current deps. Same data source as the osv-scanner CI job, so CI and Renovate stay aligned.",
+  "osvVulnerabilityAlerts": true,
+
+  "//10": "vulnerabilityAlerts: force-overlay for advisory-driven updates. Bypasses schedule, the release-age wait, and Dashboard approval so security fixes land fast.",
+  "vulnerabilityAlerts": {
+    "labels": ["security", "dependencies"],
+    "schedule": [],
+    "minimumReleaseAge": null,
+    "dependencyDashboardApproval": false
+  },
+
+  "packageRules": [
+    {
+      "description": "Major bumps go through Dependency Dashboard approval to avoid cross-major PR spam. vulnerabilityAlerts overrides this so CVE-driven major upgrades still open a PR directly.",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true,
+      "labels": ["dependencies", "major-update"]
+    }
+  ]
+}
