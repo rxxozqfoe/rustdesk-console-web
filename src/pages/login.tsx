@@ -60,6 +60,15 @@ export default function LoginPage() {
 
   const isSubmitting = form.formState.isSubmitting
 
+  async function loadCaptcha() {
+    try {
+      const data = await getCaptcha()
+      setCaptcha(data)
+    } catch {
+      // Silently fail captcha load
+    }
+  }
+
   // Redirect if already logged in
   useEffect(() => {
     if (token) {
@@ -80,15 +89,6 @@ export default function LoginPage() {
         // Non-fatal: render without options
       })
   }, [])
-
-  async function loadCaptcha() {
-    try {
-      const data = await getCaptcha()
-      setCaptcha(data)
-    } catch {
-      // Silently fail captcha load
-    }
-  }
 
   async function onSubmit(values: LoginForm) {
     try {

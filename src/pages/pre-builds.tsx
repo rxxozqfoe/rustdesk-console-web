@@ -112,10 +112,7 @@ function LogViewerModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
       onClick={onClose}
     >
-      <Card
-        className="max-h-[85vh] w-[800px] flex flex-col"
-        onClick={(e) => e.stopPropagation()}
-      >
+      <Card className="flex max-h-[85vh] w-[800px] flex-col" onClick={(e) => e.stopPropagation()}>
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-sm">{t('pre_builds.build_log')}</CardTitle>
           {isActive && (
@@ -124,7 +121,7 @@ function LogViewerModal({
             </Badge>
           )}
         </CardHeader>
-        <CardContent className="flex-1 overflow-hidden flex flex-col">
+        <CardContent className="flex flex-1 flex-col overflow-hidden">
           <pre
             ref={preRef}
             className="bg-muted max-h-[60vh] overflow-auto rounded p-4 font-mono text-xs whitespace-pre-wrap"
@@ -171,18 +168,14 @@ export default function PreBuildsPage() {
     queryFn: () => getPreBuilds({ page, page_size: pageSize }),
     refetchInterval: (query) => {
       const jobs = query.state.data?.list ?? []
-      const hasActive = jobs.some(
-        (j) => j.status === 'pending' || j.status === 'building',
-      )
+      const hasActive = jobs.some((j) => j.status === 'pending' || j.status === 'building')
       return hasActive ? 5000 : false
     },
   })
 
   const jobs = jobsData?.list ?? []
   const total = jobsData?.total ?? 0
-  const hasActiveJob = jobs.some(
-    (j) => j.status === 'pending' || j.status === 'building',
-  )
+  const hasActiveJob = jobs.some((j) => j.status === 'pending' || j.status === 'building')
 
   // ─── Mutations ────────────────────────────────────────────────────────
 
@@ -245,15 +238,12 @@ export default function PreBuildsPage() {
       id: 'started',
       header: t('pre_builds.started'),
       cell: ({ row }) =>
-        row.original.started_at
-          ? new Date(row.original.started_at).toLocaleString()
-          : '—',
+        row.original.started_at ? new Date(row.original.started_at).toLocaleString() : '—',
     },
     {
       id: 'duration',
       header: t('pre_builds.duration'),
-      cell: ({ row }) =>
-        formatDuration(row.original.started_at, row.original.completed_at),
+      cell: ({ row }) => formatDuration(row.original.started_at, row.original.completed_at),
     },
     {
       id: 'error',
@@ -292,11 +282,7 @@ export default function PreBuildsPage() {
               <XCircle className="text-destructive size-4" />
             </Button>
           )}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setDeleteTarget(row.original.id)}
-          >
+          <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(row.original.id)}>
             <Trash2 className="text-destructive size-4" />
           </Button>
         </div>
@@ -326,7 +312,7 @@ export default function PreBuildsPage() {
         <CardContent className="flex flex-wrap items-end gap-6">
           <div className="flex flex-col gap-1">
             <Label className="text-muted-foreground text-xs">{t('pre_builds.version')}</Label>
-            <Select value={selectedVersion} onValueChange={setSelectedVersion}>
+            <Select value={selectedVersion} onValueChange={(v) => setSelectedVersion(v ?? '')}>
               <SelectTrigger className="h-9 w-40">
                 <SelectValue placeholder={t('pre_builds.select_version')} />
               </SelectTrigger>
@@ -342,7 +328,7 @@ export default function PreBuildsPage() {
 
           <div className="flex flex-col gap-1">
             <Label className="text-muted-foreground text-xs">{t('pre_builds.platform')}</Label>
-            <Select value={selectedPlatform} onValueChange={setSelectedPlatform}>
+            <Select value={selectedPlatform} onValueChange={(v) => setSelectedPlatform(v ?? '')}>
               <SelectTrigger className="h-9 w-32">
                 <SelectValue />
               </SelectTrigger>
@@ -354,7 +340,7 @@ export default function PreBuildsPage() {
 
           <div className="flex flex-col gap-1">
             <Label className="text-muted-foreground text-xs">{t('pre_builds.arch')}</Label>
-            <Select value={selectedArch} onValueChange={setSelectedArch}>
+            <Select value={selectedArch} onValueChange={(v) => setSelectedArch(v ?? '')}>
               <SelectTrigger className="h-9 w-32">
                 <SelectValue />
               </SelectTrigger>
@@ -374,7 +360,9 @@ export default function PreBuildsPage() {
           </Button>
 
           {hasActiveJob && (
-            <span className="text-muted-foreground text-xs">{t('pre_builds.build_in_progress')}</span>
+            <span className="text-muted-foreground text-xs">
+              {t('pre_builds.build_in_progress')}
+            </span>
           )}
         </CardContent>
       </Card>

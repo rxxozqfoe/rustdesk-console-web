@@ -24,4 +24,14 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    // shadcn/ui primitives are CLI-generated and intentionally export variant
+    // constants / hooks alongside their components, which trips Fast Refresh's
+    // single-export rule. Fast Refresh ergonomics don't apply to these
+    // library-style files, so the rule is off for the generated ui/ dir.
+    files: ['src/components/ui/**/*.{ts,tsx}'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 ])

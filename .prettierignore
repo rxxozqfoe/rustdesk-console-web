@@ -1,3 +1,8 @@
 dist
 node_modules
 pnpm-lock.yaml
+
+# Hand-maintained, not Prettier-managed:
+.github/
+docs/
+.hadolint.yaml
