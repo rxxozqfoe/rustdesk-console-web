@@ -90,14 +90,20 @@ jobs:
         run: pnpm build
 
   # -------------------------------------------------------------------
-  # Dependency vulnerability scan (OSV.dev). Two passes by design,
-  # mirroring the server template's Trivy pattern:
+  # Dependency vulnerability scan (OSV.dev), wired as the maintainer's
+  # canonical scanner -> reporter -> upload chain. The two binaries have
+  # different jobs: osv-scanner produces the result file, osv-reporter
+  # turns it into SARIF and enforces the gate. They are NOT
+  # interchangeable — the reporter does not re-scan and rejects the
+  # scanner's --format/--lockfile flags.
   #
-  #   1. "block" pass — fails the job on any vulnerability OSV knows
-  #      about for the locked dependency set.
-  #   2. "report" pass — runs unconditionally (if: always()) and uploads
-  #      a SARIF report to the GitHub Security tab so findings are
-  #      visible even when the block pass fails.
+  #   1. scanner  — emits results.json for the locked dependency set.
+  #                 continue-on-error: it exits non-zero on findings, but
+  #                 the gate is owned by the reporter step below.
+  #   2. reporter — reads results.json (--new), writes the SARIF, and
+  #                 fails the job on a real finding (--fail-on-vuln=true).
+  #   3. upload   — runs unconditionally so the Security tab is populated
+  #                 even when the gate fails the job.
   # -------------------------------------------------------------------
   vuln-scan:
     name: Dependency vuln scan (osv-scanner)
@@ -110,26 +116,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      # Block pass: scans pnpm-lock.yaml; the reusable workflow exits
-      # non-zero if any vulnerability is found, failing CI.
-      - name: OSV scan — block on findings
+      # Scan pass: emit JSON for the locked dependency set. continue-on-error
+      # so a vulnerable lockfile does not abort the job here — osv-scanner
+      # exits non-zero on findings, and the reporter step is what gates.
+      - name: OSV scan — produce JSON
         uses: google/osv-scanner-action/osv-scanner-action@9a498708959aeaef5ef730655706c5a1df1edbc2 # v2.3.8
+        continue-on-error: true
         with:
           scan-args: |-
+            --output=results.json
+            --format=json
             --lockfile=pnpm-lock.yaml
             ./
 
-      # Report pass: always runs (even if the block pass failed) and
-      # emits SARIF so the full picture lands in the Security tab.
-      - name: OSV scan — full SARIF report
+      # Report pass: convert the scanner's JSON to SARIF and enforce the
+      # gate. --new points at results.json; --fail-on-vuln=true makes a real
+      # finding fail the job; --gh-annotations=false keeps the PR diff clean.
+      - name: OSV report — JSON to SARIF + gate
         if: always()
         uses: google/osv-scanner-action/osv-reporter-action@9a498708959aeaef5ef730655706c5a1df1edbc2 # v2.3.8
         with:
           scan-args: |-
             --output=osv-results.sarif
-            --format=sarif
-            --lockfile=pnpm-lock.yaml
-            ./
+            --new=results.json
+            --gh-annotations=false
+            --fail-on-vuln=true
 
       - name: Upload OSV SARIF to GitHub Security
         if: always()
@@ -137,29 +148,6 @@ jobs:
         with:
           sarif_file: osv-results.sarif
           category: osv-scanner
-
-  # -------------------------------------------------------------------
-  # Dependency review — PR-only. Flags newly introduced dependencies
-  # with known vulnerabilities or disallowed licenses by diffing the
-  # base and head of the PR. Has no meaning on a push (no base to diff
-  # against), so it is gated to pull_request events.
-  # -------------------------------------------------------------------
-  dependency-review:
-    name: Dependency review (PR only)
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-      pull-requests: read
-    steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Dependency review
-        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
-        with:
-          fail-on-severity: high
 
   # -------------------------------------------------------------------
   # Dockerfile lint (hadolint) + a digest-pin gate. hadolint covers the

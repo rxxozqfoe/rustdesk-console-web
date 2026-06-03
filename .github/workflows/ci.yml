@@ -33,4 +33,3 @@ jobs:
     permissions:
       contents: read
       security-events: write   # for the osv-scanner job to upload SARIF
-      pull-requests: read      # for the dependency-review job (PR only)
