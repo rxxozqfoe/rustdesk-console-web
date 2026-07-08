@@ -8,6 +8,14 @@ export interface AuditConn {
   ip: string
   session_id: string
   type: number
+  // 1.4.9+: primary authentication method used by the controller.
+  // 0=None 1=Click 2=TemporaryPassword 3=PermanentPassword 4=SwitchSides
+  primary_auth: number
+  // 1.4.9+: two-factor method. 0=None 1=TOTP 2=TrustedDevice
+  two_factor: number
+  // 1.4.9+: controller user attribution, resolved from conn_audit_ref.
+  controller_user_id: number
+  controller_username: string
   close_time: string
   created_at: string
 }
