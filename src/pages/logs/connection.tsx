@@ -27,6 +27,16 @@ function formatDate(value: string | number): string {
   }
 }
 
+// 1.4.9 connection-audit auth enums (mirror rustdesk client connection.rs).
+const PRIMARY_AUTH_KEYS = [
+  'none',
+  'click',
+  'temporary_password',
+  'permanent_password',
+  'switch_sides',
+]
+const TWO_FACTOR_KEYS = ['none', 'totp', 'trusted_device']
+
 export default function ConnectionLogsPage() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
@@ -160,6 +170,11 @@ export default function ConnectionLogsPage() {
       header: t('logs.connection.from_name'),
     },
     {
+      id: 'controller_username',
+      header: t('logs.connection.controller_user'),
+      cell: ({ row }) => row.original.controller_username || '—',
+    },
+    {
       accessorKey: 'ip',
       header: t('logs.connection.ip'),
     },
@@ -170,6 +185,24 @@ export default function ConnectionLogsPage() {
     {
       accessorKey: 'type',
       header: t('logs.connection.type'),
+    },
+    {
+      id: 'primary_auth',
+      header: t('logs.connection.primary_auth'),
+      cell: ({ row }) => {
+        const v = row.original.primary_auth ?? 0
+        if (!v) return '—'
+        return t(`logs.connection.primary_auth_val.${PRIMARY_AUTH_KEYS[v] ?? 'none'}`)
+      },
+    },
+    {
+      id: 'two_factor',
+      header: t('logs.connection.two_factor'),
+      cell: ({ row }) => {
+        const v = row.original.two_factor ?? 0
+        if (!v) return '—'
+        return t(`logs.connection.two_factor_val.${TWO_FACTOR_KEYS[v] ?? 'none'}`)
+      },
     },
     {
       accessorKey: 'session_id',

@@ -137,6 +137,21 @@
       "session_id": "Session ID",
       "type": "類型",
       "close_time": "關閉時間",
+      "controller_user": "控制端使用者",
+      "primary_auth": "驗證方式",
+      "two_factor": "兩步驟驗證",
+      "primary_auth_val": {
+        "none": "無",
+        "click": "已接受",
+        "temporary_password": "一次性密碼",
+        "permanent_password": "永久密碼",
+        "switch_sides": "切換控制方"
+      },
+      "two_factor_val": {
+        "none": "無",
+        "totp": "TOTP",
+        "trusted_device": "受信任裝置"
+      },
       "disconnect": "斷線",
       "confirm_disconnect": "確定要斷開此連線嗎？"
     },
@@ -272,6 +287,15 @@
       "remove-preset-password-warning": "移除預設密碼警告",
       "allow-numeric-one-time-password": "允許數字一次性密碼",
       "allow-auto-update": "允許自動更新",
+      "enable-privacy-mode": "啟用隱私模式",
+      "enable-perm-change-in-accept-window": "允許在接受視窗中變更權限",
+      "allow-scope-violation-close": "違反範圍時關閉工作階段",
+      "allow-scope-violation-alarm": "違反範圍時發出警報",
+      "use-raw-tcp-for-api": "API 使用原始 TCP",
+      "keep-awake-during-outgoing-sessions": "傳出連線期間保持喚醒",
+      "allow-command-line-settings-when-settings-disabled": "設定停用時仍允許命令列設定",
+      "allow-deep-link-password": "允許深層連結密碼",
+      "allow-deep-link-server-settings": "允許深層連結伺服器設定",
       "view-only": "僅查看",
       "show-remote-cursor": "顯示遠端游標",
       "show-monitors-toolbar": "顯示螢幕工具列",
