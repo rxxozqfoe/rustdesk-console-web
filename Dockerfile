@@ -15,7 +15,7 @@
 # ---- build stage ----------------------------------------------------------
 # node:22-bookworm-slim — Node 22 LTS. pnpm-lock.yaml is lockfileVersion 6.0
 # (pnpm 8.x), pinned below via corepack.
-FROM --platform=$BUILDPLATFORM docker.io/library/node:22-bookworm-slim@sha256:7af03b14a13c8cdd38e45058fd957bf00a72bbe17feac43b1c15a689c029c732 AS build
+FROM --platform=$BUILDPLATFORM docker.io/library/node:22-bookworm-slim@sha256:48e4b67d85f87bd551df43704e24d252f56cc5f8e9718841aace50f19948f0f9 AS build
 
 WORKDIR /app
 
