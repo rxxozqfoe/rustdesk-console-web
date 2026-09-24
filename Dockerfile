@@ -38,7 +38,7 @@ RUN pnpm build
 # ---- runtime stage --------------------------------------------------------
 # cgr.dev/chainguard/nginx — minimal, nonroot (uid 65532), cosign-signed.
 # Serves /usr/share/nginx/html on :8080 by default.
-FROM cgr.dev/chainguard/nginx@sha256:bfc999927013bd5d015c496342bd8fc1b43a94e740b61af1fa55734f66e94947 AS runtime
+FROM cgr.dev/chainguard/nginx@sha256:f5bfac85024ea2d7c16a28ac21e985c6d19a20a60ae74838f056297d44467525 AS runtime
 
 # SPA-aware server config (overwrites the stock default site config).
 COPY docker/nginx.conf /etc/nginx/conf.d/nginx.default.conf
