@@ -137,6 +137,21 @@
       "session_id": "Session ID",
       "type": "Type",
       "close_time": "Close Time",
+      "controller_user": "Controller User",
+      "primary_auth": "Auth Method",
+      "two_factor": "2FA",
+      "primary_auth_val": {
+        "none": "None",
+        "click": "Accepted",
+        "temporary_password": "One-time Password",
+        "permanent_password": "Permanent Password",
+        "switch_sides": "Switch Sides"
+      },
+      "two_factor_val": {
+        "none": "None",
+        "totp": "TOTP",
+        "trusted_device": "Trusted Device"
+      },
       "disconnect": "Disconnect",
       "confirm_disconnect": "Are you sure you want to disconnect this connection?"
     },
@@ -272,6 +287,15 @@
       "remove-preset-password-warning": "Remove Preset Password Warning",
       "allow-numeric-one-time-password": "Allow Numeric OTP",
       "allow-auto-update": "Allow Auto Update",
+      "enable-privacy-mode": "Enable Privacy Mode",
+      "enable-perm-change-in-accept-window": "Allow Permission Change in Accept Window",
+      "allow-scope-violation-close": "Close Session on Scope Violation",
+      "allow-scope-violation-alarm": "Alarm on Scope Violation",
+      "use-raw-tcp-for-api": "Use Raw TCP for API",
+      "keep-awake-during-outgoing-sessions": "Keep Awake During Outgoing Sessions",
+      "allow-command-line-settings-when-settings-disabled": "Allow CLI Settings When Settings Disabled",
+      "allow-deep-link-password": "Allow Deep Link Password",
+      "allow-deep-link-server-settings": "Allow Deep Link Server Settings",
       "view-only": "View Only",
       "show-remote-cursor": "Show Remote Cursor",
       "show-monitors-toolbar": "Show Monitors Toolbar",

@@ -37,6 +37,7 @@ export const STRATEGY_SECTIONS: OptionSection[] = [
       { key: 'enable-remote-restart', type: 'toggle', defaultVal: Y },
       { key: 'enable-record-session', type: 'toggle', defaultVal: Y },
       { key: 'enable-block-input', type: 'toggle', defaultVal: Y },
+      { key: 'enable-privacy-mode', type: 'toggle', defaultVal: Y },
     ],
   },
   {
@@ -52,6 +53,9 @@ export const STRATEGY_SECTIONS: OptionSection[] = [
       { key: 'temporary-password-length', type: 'text' },
       { key: 'whitelist', type: 'text' },
       { key: 'allow-remote-config-modification', type: 'toggle', defaultVal: N },
+      { key: 'enable-perm-change-in-accept-window', type: 'toggle', defaultVal: Y },
+      { key: 'allow-scope-violation-close', type: 'toggle', defaultVal: N },
+      { key: 'allow-scope-violation-alarm', type: 'toggle', defaultVal: N },
     ],
   },
   {
@@ -68,6 +72,7 @@ export const STRATEGY_SECTIONS: OptionSection[] = [
       { key: 'disable-udp', type: 'toggle', defaultVal: N },
       { key: 'allow-websocket', type: 'toggle', defaultVal: N },
       { key: 'allow-insecure-tls-fallback', type: 'toggle', defaultVal: N },
+      { key: 'use-raw-tcp-for-api', type: 'toggle', defaultVal: N },
     ],
   },
   {
@@ -84,6 +89,7 @@ export const STRATEGY_SECTIONS: OptionSection[] = [
       { key: 'enable-hwcodec', type: 'toggle', defaultVal: Y },
       { key: 'enable-directx-capture', type: 'toggle', defaultVal: Y },
       { key: 'keep-awake-during-incoming-sessions', type: 'toggle', defaultVal: N },
+      { key: 'keep-awake-during-outgoing-sessions', type: 'toggle', defaultVal: N },
     ],
   },
   {
@@ -140,6 +146,9 @@ export const STRATEGY_SECTIONS: OptionSection[] = [
     options: [
       { key: 'allow-numeric-one-time-password', type: 'toggle', defaultVal: N },
       { key: 'allow-auto-update', type: 'toggle', defaultVal: N },
+      { key: 'allow-command-line-settings-when-settings-disabled', type: 'toggle', defaultVal: N },
+      { key: 'allow-deep-link-password', type: 'toggle', defaultVal: N },
+      { key: 'allow-deep-link-server-settings', type: 'toggle', defaultVal: N },
     ],
   },
 ]
