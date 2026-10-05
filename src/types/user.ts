@@ -8,6 +8,8 @@ export interface User {
   is_admin: boolean
   status: number
   remark: string
+  // Set when the server config (admin.password) manages this password.
+  password_managed?: boolean
   created_at: string
   updated_at: string
 }
