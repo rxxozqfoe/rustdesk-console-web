@@ -326,14 +326,17 @@ export default function UsersPage() {
           >
             <Pencil className="size-4" />
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            title={t('common.change_password')}
-            onClick={() => handleChangePassword(row.original)}
-          >
-            <KeyRound className="size-4" />
-          </Button>
+          {/* The server sets this password from its config and rejects changes */}
+          {!row.original.password_managed && (
+            <Button
+              variant="ghost"
+              size="icon"
+              title={t('common.change_password')}
+              onClick={() => handleChangePassword(row.original)}
+            >
+              <KeyRound className="size-4" />
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="icon"
