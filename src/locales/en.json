@@ -38,7 +38,10 @@
     "forgot_password": "Forgot Password ?",
     "login": "Login",
     "or": "or",
-    "login_with": "Login With {{provider}}"
+    "login_with": "Login With {{provider}}",
+    "oauth_popup_blocked": "Popup was blocked. Please allow popups for this site and try again.",
+    "oauth_timeout": "OAuth login timed out. If you finished signing in, the OAuth account may not be linked to an admin user yet — link it first, then try again.",
+    "oauth_failed": "OAuth login failed. Please try again."
   },
   "common": {
     "add": "Add",

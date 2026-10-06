@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
@@ -9,6 +9,7 @@ import { User, Lock, Eye, EyeOff, GitBranch } from 'lucide-react'
 
 import { useAuthStore } from '@/stores/auth'
 import { login, getLoginOptions, getCaptcha } from '@/services/auth.service'
+import { beginOAuth, pollOAuthQuery } from '@/services/auth-oauth.service'
 import type { LoginOptions } from '@/types/user'
 
 import { Button } from '@/components/ui/button'
@@ -38,6 +39,13 @@ const loginSchema = z.object({
 
 type LoginForm = z.infer<typeof loginSchema>
 
+// Pending signal from the backend auth-query endpoint. While the user has not
+// finished authorizing (or the OAuth account is not yet bound to an admin
+// user) the API replies with this untranslated message key.
+const OAUTH_PENDING_MESSAGE = 'OauthInProgress'
+const OAUTH_POLL_INTERVAL_MS = 1500
+const OAUTH_POLL_TIMEOUT_MS = 2 * 60 * 1000
+
 export default function LoginPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -48,6 +56,39 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false)
   const [loginOptions, setLoginOptions] = useState<LoginOptions | null>(null)
   const [captcha, setCaptcha] = useState<{ id: string; b64: string } | null>(null)
+  const [oauthPending, setOauthPending] = useState<string | null>(null)
+
+  // OAuth popup + poll handles, cleaned up on unmount / completion.
+  const oauthIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const oauthTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const oauthPopupRef = useRef<Window | null>(null)
+
+  function stopOAuthPolling() {
+    if (oauthIntervalRef.current) {
+      clearInterval(oauthIntervalRef.current)
+      oauthIntervalRef.current = null
+    }
+    if (oauthTimeoutRef.current) {
+      clearTimeout(oauthTimeoutRef.current)
+      oauthTimeoutRef.current = null
+    }
+    setOauthPending(null)
+  }
+
+  function closeOAuthPopup() {
+    if (oauthPopupRef.current && !oauthPopupRef.current.closed) {
+      oauthPopupRef.current.close()
+    }
+    oauthPopupRef.current = null
+  }
+
+  // Tear down the poll loop and popup if the component unmounts mid-flow.
+  useEffect(() => {
+    return () => {
+      stopOAuthPolling()
+      closeOAuthPopup()
+    }
+  }, [])
 
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
@@ -113,8 +154,55 @@ export default function LoginPage() {
     }
   }
 
-  function handleOAuthClick(providerName: string) {
-    toast.info(t('login.login_with', { provider: providerName }))
+  async function handleOAuthClick(op: string) {
+    // Only one OAuth attempt at a time.
+    if (oauthPending) return
+
+    setOauthPending(op)
+    let begin: { code: string; url: string }
+    try {
+      begin = await beginOAuth(op)
+    } catch (err: unknown) {
+      setOauthPending(null)
+      const message = err instanceof Error ? err.message : t('login.oauth_failed')
+      toast.error(message)
+      return
+    }
+
+    const popup = window.open(begin.url, 'rustdesk-oauth', 'width=600,height=720')
+    if (!popup) {
+      setOauthPending(null)
+      toast.error(t('login.oauth_popup_blocked'))
+      return
+    }
+    oauthPopupRef.current = popup
+
+    // The overall deadline is owned by this timeout, which clears the poll
+    // interval via stopOAuthPolling().
+    oauthTimeoutRef.current = setTimeout(() => {
+      stopOAuthPolling()
+      closeOAuthPopup()
+      toast.error(t('login.oauth_timeout'))
+    }, OAUTH_POLL_TIMEOUT_MS)
+
+    oauthIntervalRef.current = setInterval(async () => {
+      try {
+        const res = await pollOAuthQuery(begin.code)
+        // Success: persist auth and navigate.
+        stopOAuthPolling()
+        closeOAuthPopup()
+        setAuthFromLogin(res)
+        navigate('/', { replace: true })
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : ''
+        // Still pending / not yet bound: keep polling silently.
+        if (message === OAUTH_PENDING_MESSAGE) return
+        // Any other backend error (e.g. expired state) ends the flow.
+        stopOAuthPolling()
+        closeOAuthPopup()
+        toast.error(message || t('login.oauth_failed'))
+      }
+    }, OAUTH_POLL_INTERVAL_MS)
   }
 
   function getOAuthIcon(type: string) {
@@ -282,16 +370,21 @@ export default function LoginPage() {
                       <div className="border-border flex-1 border-t" />
                     </div>
                     <div className="flex flex-col gap-2">
-                      {loginOptions.ops.map((provider) => (
+                      {loginOptions.ops.map((op) => (
                         <Button
-                          key={provider.name}
+                          key={op}
                           type="button"
                           variant="outline"
                           className="w-full gap-2"
-                          onClick={() => handleOAuthClick(provider.name)}
+                          disabled={oauthPending !== null}
+                          onClick={() => handleOAuthClick(op)}
                         >
-                          {getOAuthIcon(provider.type)}
-                          {t('login.login_with', { provider: provider.name })}
+                          {oauthPending === op ? (
+                            <span className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                          ) : (
+                            getOAuthIcon(op)
+                          )}
+                          {t('login.login_with', { provider: op })}
                         </Button>
                       ))}
                     </div>
