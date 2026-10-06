@@ -7,28 +7,35 @@ export interface OptionDef {
   type: OptionType
   choices?: string[]
   defaultVal?: string // default value for toggle: 'Y' or 'N'
+  // A strategy push only writes the client's Config::options. Options the
+  // client reads from its built-in, local or display settings instead take
+  // effect only when built into a custom client, so strategies leave them out.
+  customOnly?: boolean
 }
 
 export interface OptionSection {
   titleKey: string
   options: OptionDef[]
+  customOnly?: boolean // every option in the section is customOnly
 }
 
 // Defaults follow RustDesk client option2bool() logic:
 //   enable-* -> default Y    allow-* -> default N
 //   hide-*   -> default N    disable-* -> default N
+// except where noted.
 const Y = 'Y'
 const N = 'N'
 
-// These sections are shared between strategies and custom client pages.
-export const STRATEGY_SECTIONS: OptionSection[] = [
+// Sections shared by the strategy and custom client pages; strategies show
+// only the options that are not customOnly (STRATEGY_SECTIONS below).
+const SHARED_SECTIONS: OptionSection[] = [
   {
     titleKey: 'strategies.section_access_control',
     options: [
       { key: 'enable-keyboard', type: 'toggle', defaultVal: Y },
       { key: 'enable-clipboard', type: 'toggle', defaultVal: Y },
       { key: 'enable-file-transfer', type: 'toggle', defaultVal: Y },
-      { key: 'enable-file-copy-paste', type: 'toggle', defaultVal: Y },
+      { key: 'enable-file-copy-paste', type: 'toggle', defaultVal: Y, customOnly: true },
       { key: 'enable-camera', type: 'toggle', defaultVal: Y },
       { key: 'enable-terminal', type: 'toggle', defaultVal: Y },
       { key: 'enable-remote-printer', type: 'toggle', defaultVal: Y },
@@ -46,14 +53,21 @@ export const STRATEGY_SECTIONS: OptionSection[] = [
       { key: 'access-mode', type: 'select', choices: ['custom', 'full', 'view'] },
       { key: 'approve-mode', type: 'select', choices: ['password', 'click', 'password-click'] },
       {
-        key: 'verify-method',
+        key: 'verification-method',
         type: 'select',
         choices: ['use-temporary-password', 'use-permanent-password', 'use-both-passwords'],
       },
       { key: 'temporary-password-length', type: 'text' },
       { key: 'whitelist', type: 'text' },
+      // 1.5.0+: comma-separated peer ids, * and ? wildcards
+      { key: 'id-whitelist', type: 'text' },
       { key: 'allow-remote-config-modification', type: 'toggle', defaultVal: N },
-      { key: 'enable-perm-change-in-accept-window', type: 'toggle', defaultVal: Y },
+      {
+        key: 'enable-perm-change-in-accept-window',
+        type: 'toggle',
+        defaultVal: Y,
+        customOnly: true,
+      },
       { key: 'allow-scope-violation-close', type: 'toggle', defaultVal: N },
       { key: 'allow-scope-violation-alarm', type: 'toggle', defaultVal: N },
     ],
@@ -72,7 +86,10 @@ export const STRATEGY_SECTIONS: OptionSection[] = [
       { key: 'disable-udp', type: 'toggle', defaultVal: N },
       { key: 'allow-websocket', type: 'toggle', defaultVal: N },
       { key: 'allow-insecure-tls-fallback', type: 'toggle', defaultVal: N },
-      { key: 'use-raw-tcp-for-api', type: 'toggle', defaultVal: N },
+      { key: 'use-raw-tcp-for-api', type: 'toggle', defaultVal: N, customOnly: true },
+      // 1.5.0+
+      { key: 'allow-kcp-congestion-control', type: 'toggle', defaultVal: N },
+      { key: 'allow-webrtc-congestion-control', type: 'toggle', defaultVal: N },
     ],
   },
   {
@@ -82,14 +99,22 @@ export const STRATEGY_SECTIONS: OptionSection[] = [
       { key: 'auto-disconnect-timeout', type: 'text' },
       { key: 'allow-only-conn-window-open', type: 'toggle', defaultVal: N },
       { key: 'allow-auto-record-incoming', type: 'toggle', defaultVal: N },
+      // 1.5.0+: absolute path, used by the Windows service
+      { key: 'windows-service-video-save-directory', type: 'text' },
       { key: 'enable-abr', type: 'toggle', defaultVal: Y },
       { key: 'allow-remove-wallpaper', type: 'toggle', defaultVal: N },
       { key: 'allow-always-software-render', type: 'toggle', defaultVal: N },
+      // Removed in 1.5.0; still applies to 1.4.9 and older clients
       { key: 'allow-linux-headless', type: 'toggle', defaultVal: N },
       { key: 'enable-hwcodec', type: 'toggle', defaultVal: Y },
       { key: 'enable-directx-capture', type: 'toggle', defaultVal: Y },
       { key: 'keep-awake-during-incoming-sessions', type: 'toggle', defaultVal: N },
-      { key: 'keep-awake-during-outgoing-sessions', type: 'toggle', defaultVal: N },
+      {
+        key: 'keep-awake-during-outgoing-sessions',
+        type: 'toggle',
+        defaultVal: N,
+        customOnly: true,
+      },
     ],
   },
   {
@@ -106,6 +131,8 @@ export const STRATEGY_SECTIONS: OptionSection[] = [
   },
   {
     titleKey: 'strategies.section_proxy',
+    // Parsed into the proxy setting by the custom client loader only
+    customOnly: true,
     options: [
       { key: 'proxy-url', type: 'text' },
       { key: 'proxy-username', type: 'text' },
@@ -114,6 +141,7 @@ export const STRATEGY_SECTIONS: OptionSection[] = [
   },
   {
     titleKey: 'strategies.section_ui',
+    customOnly: true,
     options: [
       { key: 'hide-security-settings', type: 'toggle', defaultVal: N },
       { key: 'hide-network-settings', type: 'toggle', defaultVal: N },
@@ -122,10 +150,14 @@ export const STRATEGY_SECTIONS: OptionSection[] = [
       { key: 'hide-remote-printer-settings', type: 'toggle', defaultVal: N },
       { key: 'hide-websocket-settings', type: 'toggle', defaultVal: N },
       { key: 'hide-stop-service', type: 'toggle', defaultVal: N },
+      // 1.5.0+
+      { key: 'hide-general-settings', type: 'toggle', defaultVal: N },
+      { key: 'hide-elevate-button-in-accept-window', type: 'toggle', defaultVal: N },
     ],
   },
   {
     titleKey: 'strategies.section_builtin',
+    customOnly: true,
     options: [
       { key: 'preset-device-group-name', type: 'text' },
       { key: 'preset-user-name', type: 'text' },
@@ -146,9 +178,14 @@ export const STRATEGY_SECTIONS: OptionSection[] = [
     options: [
       { key: 'allow-numeric-one-time-password', type: 'toggle', defaultVal: N },
       { key: 'allow-auto-update', type: 'toggle', defaultVal: N },
-      { key: 'allow-command-line-settings-when-settings-disabled', type: 'toggle', defaultVal: N },
-      { key: 'allow-deep-link-password', type: 'toggle', defaultVal: N },
-      { key: 'allow-deep-link-server-settings', type: 'toggle', defaultVal: N },
+      {
+        key: 'allow-command-line-settings-when-settings-disabled',
+        type: 'toggle',
+        defaultVal: N,
+        customOnly: true,
+      },
+      { key: 'allow-deep-link-password', type: 'toggle', defaultVal: N, customOnly: true },
+      { key: 'allow-deep-link-server-settings', type: 'toggle', defaultVal: N, customOnly: true },
     ],
   },
 ]
@@ -157,25 +194,26 @@ export const STRATEGY_SECTIONS: OptionSection[] = [
 export const CUSTOM_CLIENT_EXTRA_SECTIONS: OptionSection[] = [
   {
     titleKey: 'custom_clients.section_display',
+    // Key names as the client spells them: some use underscores
     options: [
-      { key: 'view-only', type: 'toggle', defaultVal: N },
-      { key: 'show-remote-cursor', type: 'toggle', defaultVal: N },
-      { key: 'show-monitors-toolbar', type: 'toggle', defaultVal: N },
-      { key: 'collapse-toolbar', type: 'toggle', defaultVal: N },
-      { key: 'show-quality-monitor', type: 'toggle', defaultVal: N },
-      { key: 'follow-remote-cursor', type: 'toggle', defaultVal: N },
-      { key: 'follow-remote-window', type: 'toggle', defaultVal: N },
+      { key: 'view_only', type: 'toggle', defaultVal: N },
+      { key: 'show_remote_cursor', type: 'toggle', defaultVal: N },
+      { key: 'show_monitors_toolbar', type: 'toggle', defaultVal: N },
+      { key: 'collapse_toolbar', type: 'toggle', defaultVal: N },
+      { key: 'show_quality_monitor', type: 'toggle', defaultVal: N },
+      { key: 'follow_remote_cursor', type: 'toggle', defaultVal: N },
+      { key: 'follow_remote_window', type: 'toggle', defaultVal: N },
       {
-        key: 'view-style',
+        key: 'view_style',
         type: 'select',
         choices: ['original', 'adaptive'],
       },
       {
-        key: 'image-quality',
+        key: 'image_quality',
         type: 'select',
         choices: ['best', 'balanced', 'low', 'custom'],
       },
-      { key: 'custom-image-quality', type: 'text' },
+      { key: 'custom_image_quality', type: 'text' },
       { key: 'custom-fps', type: 'text' },
       {
         key: 'codec-preference',
@@ -183,15 +221,15 @@ export const CUSTOM_CLIENT_EXTRA_SECTIONS: OptionSection[] = [
         choices: ['auto', 'vp8', 'vp9', 'av1', 'h264', 'h265'],
       },
       {
-        key: 'scroll-style',
+        key: 'scroll_style',
         type: 'select',
         choices: ['scrollauto', 'scrollbar', 'scrolledge'],
       },
-      { key: 'disable-audio', type: 'toggle', defaultVal: N },
-      { key: 'disable-clipboard', type: 'toggle', defaultVal: N },
-      { key: 'lock-after-session-end', type: 'toggle', defaultVal: N },
-      { key: 'privacy-mode', type: 'toggle', defaultVal: N },
-      { key: 'reverse-mouse-wheel', type: 'toggle', defaultVal: N },
+      { key: 'disable_audio', type: 'toggle', defaultVal: N },
+      { key: 'disable_clipboard', type: 'toggle', defaultVal: N },
+      { key: 'lock_after_session_end', type: 'toggle', defaultVal: N },
+      { key: 'privacy_mode', type: 'toggle', defaultVal: N },
+      { key: 'reverse_mouse_wheel', type: 'toggle', defaultVal: N },
       { key: 'swap-left-right-mouse', type: 'toggle', defaultVal: N },
       { key: 'zoom-cursor', type: 'toggle', defaultVal: N },
       { key: 'i444', type: 'toggle', defaultVal: N },
@@ -203,6 +241,7 @@ export const CUSTOM_CLIENT_EXTRA_SECTIONS: OptionSection[] = [
       { key: 'theme', type: 'select', choices: ['dark', 'light', 'system'] },
       { key: 'lang', type: 'text' },
       { key: 'allow-auto-record-outgoing', type: 'toggle', defaultVal: N },
+      { key: 'hide-recording-button', type: 'toggle', defaultVal: N }, // 1.5.0+
       { key: 'video-save-directory', type: 'text' },
       { key: 'enable-confirm-closing-tabs', type: 'toggle', defaultVal: Y },
       { key: 'enable-open-new-connections-in-tabs', type: 'toggle', defaultVal: Y },
@@ -218,8 +257,17 @@ export const CUSTOM_CLIENT_EXTRA_SECTIONS: OptionSection[] = [
       },
       { key: 'sync-ab-with-recent-sessions', type: 'toggle', defaultVal: N },
       { key: 'filter-ab-by-intersection', type: 'toggle', defaultVal: N },
-      { key: 'enable-udp-punch', type: 'toggle', defaultVal: Y },
-      { key: 'enable-ipv6-punch', type: 'toggle', defaultVal: Y },
+      // UDP/IPv6 punch and WebRTC default to N against a self-hosted server
+      { key: 'enable-udp-punch', type: 'toggle', defaultVal: N },
+      { key: 'enable-ipv6-punch', type: 'toggle', defaultVal: N },
+      // 1.5.0+
+      { key: 'enable-tcp-punch', type: 'toggle', defaultVal: Y },
+      { key: 'enable-webrtc', type: 'toggle', defaultVal: N },
+      { key: 'relay-fallback-delay', type: 'text' }, // seconds, default 2.5
+      { key: 'enable-port-forward-mux', type: 'toggle', defaultVal: Y },
+      { key: 'allow-sync-clipboard-between-sessions', type: 'toggle', defaultVal: N },
+      // unset = ask before the remote terminal writes the clipboard (OSC 52)
+      { key: 'allow-terminal-clipboard-write', type: 'toggle' },
     ],
   },
   {
@@ -240,9 +288,15 @@ export const CUSTOM_CLIENT_EXTRA_SECTIONS: OptionSection[] = [
   },
 ]
 
+export const STRATEGY_SECTIONS: OptionSection[] = SHARED_SECTIONS.filter(
+  (section) => !section.customOnly,
+)
+  .map((section) => ({ ...section, options: section.options.filter((opt) => !opt.customOnly) }))
+  .filter((section) => section.options.length > 0)
+
 // All sections combined for custom client
 export const ALL_CUSTOM_CLIENT_SECTIONS: OptionSection[] = [
-  ...STRATEGY_SECTIONS,
+  ...SHARED_SECTIONS,
   ...CUSTOM_CLIENT_EXTRA_SECTIONS,
 ]
 
@@ -259,12 +313,24 @@ export function getDefaultConfig(sections: OptionSection[]): Record<string, stri
   return defaults
 }
 
+// Keys the console used to save under a name the client does not read.
+// Loading a saved config renames them, so the next save fixes it.
+const RENAMED_KEYS: Record<string, string> = {
+  'verify-method': 'verification-method',
+}
+
 export function configToState(
   config: Record<string, string> | undefined,
   sections: OptionSection[],
 ): Record<string, string> {
-  const defaults = getDefaultConfig(sections)
-  return { ...defaults, ...(config || {}) }
+  const state = getDefaultConfig(sections)
+  const saved = config || {}
+  for (const [k, v] of Object.entries(saved)) {
+    const renamed = RENAMED_KEYS[k]
+    if (renamed === undefined) state[k] = v
+    else if (!(renamed in saved)) state[renamed] = v
+  }
+  return state
 }
 
 export function stateToConfig(state: Record<string, string>): Record<string, string> {
