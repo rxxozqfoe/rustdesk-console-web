@@ -1,0 +1,12 @@
+node_modules
+.DS_Store
+dist-ssr
+*.local
+*log
+ogvjs
+.vscode
+.yarn
+
+# The vendored web client ships its prebuilt output: js/dist is the served
+# artifact and must be committed (overrides the root .gitignore "dist").
+!dist/
