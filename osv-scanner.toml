@@ -1,0 +1,8 @@
+# Accepted risk: braces has no fixed release (last_affected = 3.0.3). It is
+# pulled in only by the shadcn CLI (fast-glob -> micromatch), runs at build
+# time and never sees untrusted input, and nothing from it ships in the nginx
+# image. The expiry forces a re-check; drop this entry once a fix lands.
+[[IgnoredVulns]]
+id = "GHSA-vfj7-8cjw-p6xm"
+ignoreUntil = 2027-01-08
+reason = "braces 3.0.3 via shadcn CLI build-time only; no fixed version available"
