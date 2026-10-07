@@ -48,12 +48,15 @@ import { getGroups } from '@/services/group.service'
 import type { Peer, PeerForm } from '@/types/peer'
 import type { DeviceGroup } from '@/types/group'
 
-const THIRTY_MINUTES_MS = 30 * 60 * 1000
+// The client heartbeats every 15s and the API rewrites last_online_time at most
+// every 30s, so an online peer is never more than ~45s stale. 90s leaves room
+// for a missed beat without keeping a disconnected peer green.
+const ONLINE_WINDOW_MS = 90 * 1000
 
 function isOnline(lastOnlineTime: string | number): boolean {
   const ts = Number(lastOnlineTime)
   if (!ts) return false
-  return Date.now() - ts * 1000 < THIRTY_MINUTES_MS
+  return Date.now() - ts * 1000 < ONLINE_WINDOW_MS
 }
 
 function formatOnlineTime(lastOnlineTime: string | number): string {
@@ -105,6 +108,8 @@ export default function DevicesPage() {
         hostname: searchParams.hostname || undefined,
         username: searchParams.username || undefined,
       }),
+    // Keep the online dot current without a manual reload.
+    refetchInterval: 30000,
   })
 
   const { data: groupsData } = useQuery({

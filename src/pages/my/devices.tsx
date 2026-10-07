@@ -8,12 +8,15 @@ import { DataTablePagination } from '@/components/data-table/data-table-paginati
 import { getMyPeers } from '@/services/my-peer.service'
 import type { MyPeer, MyPeerQuery } from '@/types/my-peer'
 
-const THIRTY_MINUTES_MS = 30 * 60 * 1000
+// The client heartbeats every 15s and the API rewrites last_online_time at most
+// every 30s, so an online peer is never more than ~45s stale. 90s leaves room
+// for a missed beat without keeping a disconnected peer green.
+const ONLINE_WINDOW_MS = 90 * 1000
 
 function isOnline(lastOnlineTime: string | number): boolean {
   const ts = Number(lastOnlineTime)
   if (!ts) return false
-  return Date.now() - ts * 1000 < THIRTY_MINUTES_MS
+  return Date.now() - ts * 1000 < ONLINE_WINDOW_MS
 }
 
 function formatOnlineTime(lastOnlineTime: string | number): string {
@@ -44,6 +47,8 @@ export default function MyDevicesPage() {
         id: searchParams.id || undefined,
         hostname: searchParams.hostname || undefined,
       } as MyPeerQuery),
+    // Keep the online dot current without a manual reload.
+    refetchInterval: 30000,
   })
 
   const peers = data?.list ?? []
