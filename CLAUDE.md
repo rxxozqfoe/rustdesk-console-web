@@ -87,4 +87,3 @@ Every user-visible string goes through `useTranslation()` `t()`. When adding a k
 ## Known gaps / in-flight work
 
 - `src/pages/custom-clients.tsx` has **no backend admin API yet** — the page is a stub until the Go side ships endpoints. Don't wire it to fake routes.
-- The parent workspace's `graphify-out/` knowledge graph indexes the Rust/Go code, not this frontend — the "run `_rebuild_code` after edits" rule in `/home/user/rustdesk/CLAUDE.md` does not apply to changes made here.
