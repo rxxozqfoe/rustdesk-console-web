@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 overrides:
   hono: ^4.12.18
   postcss: ^8.5.10
@@ -20,7 +24,7 @@ dependencies:
     version: 5.3.0
   '@hookform/resolvers':
     specifier: ^5.9.1
-    version: 5.9.1(react-hook-form@7.89.0)(zod@4.6.5)
+    version: 5.9.1(react-hook-form@7.89.0)(zod@4.6.6)
   '@tailwindcss/vite':
     specifier: ^4.3.3
     version: 4.3.3(vite@8.3.1)
@@ -86,7 +90,7 @@ dependencies:
     version: 1.4.0
   zod:
     specifier: ^4.6.5
-    version: 4.6.5
+    version: 4.6.6
   zustand:
     specifier: ^5.0.15
     version: 5.0.15(@types/react@19.3.0)(react@19.3.0)
@@ -605,12 +609,12 @@ packages:
     resolution: {integrity: sha512-dSneS5qhiauZWGDCeK4o695Xd9nUNjviSZCMQrj10eetr8Uln1ucn6bbphOM6UynAMMtNIzZNSpL9vnASJwrPQ==}
     engines: {node: '>=18.14.1'}
     peerDependencies:
-      hono: ^4
+      hono: ^4.12.18
     dependencies:
       hono: 4.13.11
     dev: false
 
-  /@hookform/resolvers@5.9.1(react-hook-form@7.89.0)(zod@4.6.5):
+  /@hookform/resolvers@5.9.1(react-hook-form@7.89.0)(zod@4.6.6):
     resolution: {integrity: sha512-7b7vsbraJxKgjVSA1Nur9tLwj539WGJUBLA7QNvXnFoT2pM5Z7G+6rlukk4B2/QrTZy6huRtH6wKeESPKuIr6w==}
     peerDependencies:
       '@sinclair/typebox': '>=0.25.24'
@@ -690,7 +694,7 @@ packages:
     dependencies:
       '@standard-schema/utils': 0.3.0
       react-hook-form: 7.89.0(@types/react@19.3.0)(react@19.3.0)
-      zod: 4.6.5
+      zod: 4.6.6
     dev: false
 
   /@humanfs/core@0.19.2:
@@ -2241,8 +2245,8 @@ packages:
       '@babel/parser': 7.29.9
       eslint: 9.39.5
       hermes-parser: 0.25.1
-      zod: 4.6.5
-      zod-validation-error: 4.0.2(zod@4.6.5)
+      zod: 4.6.6
+      zod-validation-error: 4.0.2(zod@4.6.6)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -4629,21 +4633,21 @@ packages:
       zod: 3.25.76
     dev: false
 
-  /zod-validation-error@4.0.2(zod@4.6.5):
+  /zod-validation-error@4.0.2(zod@4.6.6):
     resolution: {integrity: sha512-Q6/nZLe6jxuU80qb/4uJ4t5v2VEZ44lzQjPDhYJNztRQ4wyWc6VF3D3Kb/fAuPetZQnhS3hnajCf9CsWesghLQ==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       zod: ^3.25.0 || ^4.0.0
     dependencies:
-      zod: 4.6.5
+      zod: 4.6.6
     dev: true
 
   /zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
     dev: false
 
-  /zod@4.6.5:
-    resolution: {integrity: sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q==}
+  /zod@4.6.6:
+    resolution: {integrity: sha512-4UmzQUF5fxvfcYHlbjBmejU+w+hbDnWFx4aS8kBx7nPBHcO2SqPbpAG8snbdg+Xse4pRefR98hgjFgIMCI/UhA==}
 
   /zustand@5.0.15(@types/react@19.3.0)(react@19.3.0):
     resolution: {integrity: sha512-MpSEjRiBkA9crSYeOUH32rJC7SVqAbm0Fqcqge/bUi2PPoLcBWKOsG+C8mevmpr8TwXHBVkChbbJiyvkE+i/3A==}
