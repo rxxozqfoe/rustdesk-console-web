@@ -1,11 +1,15 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 overrides:
   hono: ^4.12.18
   postcss: ^8.5.10
   qs: ^6.15.2
   ip-address: ^10.1.1
-  '@hono/node-server': ^1.19.13
+  '@hono/node-server': ^2.0.0
   brace-expansion@5: ^5.0.6
   fast-uri: ^3.1.2
   follow-redirects: ^1.16.0
@@ -601,11 +605,11 @@ packages:
     resolution: {integrity: sha512-j0m+vLQuG5XAYoHtGCVu0spvlGreR3EzpECUVzkFmI1mTVnAO38l/NEPDCFgZ177JxzYJCLSmTQibIiYPilGrA==}
     dev: false
 
-  /@hono/node-server@1.19.17(hono@4.13.11):
-    resolution: {integrity: sha512-dSneS5qhiauZWGDCeK4o695Xd9nUNjviSZCMQrj10eetr8Uln1ucn6bbphOM6UynAMMtNIzZNSpL9vnASJwrPQ==}
-    engines: {node: '>=18.14.1'}
+  /@hono/node-server@2.1.5(hono@4.13.11):
+    resolution: {integrity: sha512-MgP/I06GdvsilDspMk/qmRzpk8LOUStP6jFAbSRi40W09DhoyUn+Mj7eyKICPqeYKybOjVFLVIAQzvu1bfIa7Q==}
+    engines: {node: '>=20'}
     peerDependencies:
-      hono: ^4
+      hono: ^4.12.18
     dependencies:
       hono: 4.13.11
     dev: false
@@ -759,7 +763,7 @@ packages:
       '@cfworker/json-schema':
         optional: true
     dependencies:
-      '@hono/node-server': 1.19.17(hono@4.13.11)
+      '@hono/node-server': 2.1.5(hono@4.13.11)
       ajv: 8.20.0
       ajv-formats: 3.0.1(ajv@8.20.0)
       content-type: 1.0.5
